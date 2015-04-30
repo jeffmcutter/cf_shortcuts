@@ -6,6 +6,10 @@ SSH keys preferred.
 
 Hosts files must be named cfhosts.groupname where groupname is a name for the group of hosts.  Usage provides the list of groups found based upon the files.  Entries in host files may be commented out using # at the beginning of the line.
 
+Files can be placed into /root/bin and then cfssh will be in root's PATH.
+
+Update cfhosts.* files with appropriate hostnames or IP addresses.
+
 USAGE: cfssh group command args
 
 Available groups:

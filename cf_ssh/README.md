@@ -8,9 +8,9 @@ Hosts files must be named cf_hosts.groupname where groupname is a name for the g
 
 USAGE: cf_ssh group command args
 
-	Available groups:
-	all
-	no_db
-	ui
-	workers
+        Available groups:
+        all
+        no_db
+        ui
+        workers
 

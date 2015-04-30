@@ -4,7 +4,7 @@ Lacking pssh (Parallel SSH), this is a simple shell script to allow for running 
 
 SSH keys preferred.
 
-Hosts files must be named cf_hosts.groupname where groupname is a name for the group of hosts.  Usage provides the list of groups found based upon the files.  Entries in host files may be commented out using # at the beginning of the line.
+Hosts files must be named cfhosts.groupname where groupname is a name for the group of hosts.  Usage provides the list of groups found based upon the files.  Entries in host files may be commented out using # at the beginning of the line.
 
 USAGE: cf_ssh group command args
 

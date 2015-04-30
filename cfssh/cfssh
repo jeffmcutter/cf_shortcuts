@@ -8,9 +8,9 @@ function usage {
 	echo "USAGE: $NAME group command args"
 	echo
 	echo "	Available groups:"
-	for i in `ls $DIR/cf_hosts.*`
+	for i in `ls $DIR/cfhosts.*`
 	do
-		j=$(basename $i | sed 's/^cf_hosts\.//')
+		j=$(basename $i | sed 's/^cfhosts\.//')
 		echo "	$j"
 	done
 	echo
@@ -34,7 +34,7 @@ fi
 group=$1
 shift
 
-FILE="$DIR/cf_hosts.$group"
+FILE="$DIR/cfhosts.$group"
 
 if [ ! -r "$FILE" ]
 then

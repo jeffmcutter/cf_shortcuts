@@ -43,6 +43,7 @@ then
 	usage
 fi
 
+echo
 for i in `cat $FILE | grep -v "^#"`
 do
 	echo "*** $i ***"

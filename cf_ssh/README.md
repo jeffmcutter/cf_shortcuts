@@ -16,3 +16,16 @@ workers
 
 -h | --help for this usage statement
 
+# Example:
+
+$ cf_ssh test uptime
+
+*** cfme01 ***
+ 16:19:34 up  5:43,  0 users,  load average: 3.10, 3.06, 3.09
+
+*** cfme02 ***
+ 16:19:47 up  1:15,  0 users,  load average: 0.16, 0.07, 0.01
+
+*** cfme03 ***
+ 16:19:53 up  1:15,  0 users,  load average: 0.07, 0.15, 0.14
+

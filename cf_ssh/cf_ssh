@@ -1,0 +1,49 @@
+#!/bin/bash
+
+NAME=$(basename $0)
+DIR=$(dirname $0)
+
+function usage {
+	echo
+	echo "USAGE: $NAME group command args"
+	echo
+	echo "	Available groups:"
+	for i in `ls $DIR/cf_hosts.*`
+	do
+		j=$(basename $i | sed 's/^cf_hosts\.//')
+		echo "	$j"
+	done
+	echo
+	exit 1
+}
+
+if [[ $1 == "-h" || $1 == "--help" || $# -eq 0 ]]
+then
+	usage
+fi
+
+if [ $# -le 1 ]
+then
+	echo
+	echo "Not enough arguments!"
+	usage
+fi
+
+group=$1
+shift
+
+FILE="$DIR/cf_hosts.$group"
+
+if [ ! -r "$FILE" ]
+then
+	echo
+	echo "Group $group not available!"
+	usage
+fi
+
+for i in `cat $FILE | grep -v "^#"`
+do
+	echo "*** $i ***"
+	ssh root@$i $*
+	echo
+done

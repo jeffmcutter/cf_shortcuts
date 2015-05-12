@@ -41,7 +41,7 @@ cfscp group list
 # Examples:
 
 ```
-$ cfssh test uptime
+$ cfssh all uptime
 
 *** cfme01 ***
  16:19:34 up  5:43,  0 users,  load average: 3.10, 3.06, 3.09
@@ -52,7 +52,7 @@ $ cfssh test uptime
 *** cfme03 ***
  16:19:53 up  1:15,  0 users,  load average: 0.07, 0.15, 0.14
 
-$ cfscp test README.md /tmp/
+$ cfscp all README.md /tmp/
 
 *** cfme01 ***
 README.md                                               100% 1020     1.0KB/s   00:00    
@@ -61,7 +61,7 @@ README.md                                               100% 1020     1.0KB/s   
 README.md                                               100% 1020     1.0KB/s   00:00    
 
 
-$ cfcollect test /tmp/README.md /tmp/
+$ cfcollect all /tmp/README.md /tmp/
 
 *** cfme01 ***
 README.md                                               100% 1020     1.0KB/s   00:00    

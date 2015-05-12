@@ -5,7 +5,9 @@ Lacking pssh (Parallel SSH), this is a simple shell script to allow for running 
 SSH keys preferred.
 
 cfssh (SSH to each host in group)
+
 cfscp (SCP file TO each host in group)
+
 cfcollect (SCP file FROM each host in group)
 
 Note that this program can enable you to do things faster, including mistakes, use at your own risk.

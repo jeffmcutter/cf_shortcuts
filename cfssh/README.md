@@ -12,11 +12,9 @@ cfcollect (SCP file FROM each host in group)
 
 Note that this program can enable you to do things faster, including mistakes, use at your own risk.
 
-Hosts files must be named cfhosts.groupname where groupname is a name for the group of hosts.  Usage provides the list of groups found based upon the files.  Entries in host files may be commented out using # at the beginning of the line.
-
 Files can be placed into /root/bin and then cfssh will be in root's PATH.
 
-Update cfhosts.* files with appropriate hostnames or IP addresses.
+Update cfhosts file with appropriate hostnames or IP addresses and group assignments.
 
 # Usages:
 
@@ -35,6 +33,10 @@ no_db
 ui
 
 workers
+
+To see matching hosts for a given group, use:
+
+cfscp group list
 
 -h | --help for this usage statement
 

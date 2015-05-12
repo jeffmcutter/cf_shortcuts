@@ -29,7 +29,7 @@ function usage {
   echo
   echo "To see matching hosts for a given group, use:"
   echo
-  echo "$NAME group list"
+  echo "$NAME <group> list"
   echo
   echo "-h | --help for this usage statement."
   echo

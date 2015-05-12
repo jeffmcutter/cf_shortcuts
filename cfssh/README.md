@@ -25,15 +25,20 @@ USAGE: cfscp group local_file remote_dest_dir
 
 USAGE: cfcollect group remote_file local_dest_dir
 
-Available groups:
-all
-no_db
-ui
-workers
+	Available groups:
+	all
+	all_no_db
+	db
+	ui
+	workers
+	zone1
+	zone2
+
+
 
 To see matching hosts for a given group, use:
 
-cfscp group list
+cfscp <group> list
 
 -h | --help for this usage statement
 ```

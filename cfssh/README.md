@@ -73,3 +73,17 @@ $ ls /tmp/README*
 /tmp/README.md-cfme01  /tmp/README.md-pxe01
 ```
 
+# Sample cfhosts file:
+
+```
+# hostname_or_ip  <white space>	groups to assign host to separated by commas.
+#
+# Lines starting with a # are ignored.
+#
+cfmedb01.example.com		db
+cfmeui01.example.com		ui
+cfmewrk01.example.com		workers,zone1
+cfmewrk02.example.com		workers,zone1
+cfmewrk03.example.com		workers,zone2
+cfmewrk04.example.com		workers,zone2
+```

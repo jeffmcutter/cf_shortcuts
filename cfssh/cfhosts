@@ -1,3 +1,4 @@
+# hostname_or_ip  <white space>	groups to assign host to separated by commas.
 cfmedb01.example.com		db
 cfmeui01.example.com		ui
 cfmewrk01.example.com		workers,zone1

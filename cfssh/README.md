@@ -10,7 +10,7 @@ cfscp (SCP file TO each host in group)
 
 cfcollect (SCP file FROM each host in group)
 
-Note that this program can enable you to do things faster, including mistakes, use at your own risk.
+**Note that this program can enable you to do things faster, including mistakes, use at your own risk.**
 
 Files can be placed into /root/bin and then cfssh will be in root's PATH.
 

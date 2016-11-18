@@ -1,0 +1,7 @@
+Put your SSH public key here (copy id_rsa.pub here for example).
+
+virt-customize will retain the file ownership and permissions, so you will also want to:
+
+chmod 600 authorized_keys
+chown root:root authorized_keys
+

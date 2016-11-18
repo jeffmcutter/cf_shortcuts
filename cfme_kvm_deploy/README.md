@@ -12,3 +12,4 @@ Does the following:
 * Removes old ssh host key for this host name.
 * Configures local VMDB database and starts application.
 
+NOTE: This script expects to be able to find the derived hostname via getent hosts, set that up first.  I put a bunch of cfme## entries into my /etc/hosts file for this, but you could do anything getent hosts can find.

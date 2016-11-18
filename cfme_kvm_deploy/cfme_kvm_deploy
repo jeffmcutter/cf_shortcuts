@@ -1,4 +1,16 @@
-#!/bin/bash -x
+#!/bin/bash
+
+# Configuration Variables.
+
+HOSTNAME_PREFIX="cfme"
+CFME_IMG_FILE="cfme-rhos-5.6.2.2-1.x86_64.qcow2"
+#CFME_IMG_FILE="cfme-rhos-5.7.0.10-1.x86_64.qcow2"
+CFME_IMG_LOCATION="/home/jcutter/media"
+WORKDIR=/home/jcutter/work/laptop/cfme
+CPUCOUNT=4
+MEMORY_MB=6144
+
+# Usage
 
 NAME=$(basename $0)
 function usage {
@@ -18,17 +30,16 @@ then
   usage
 fi
 
-CFME="cfme$1"
-PURPOSE=$2
+# Derived Variables.
 
-#CFME_IMG="cfme-rhos-5.6.2.2-1.x86_64.qcow2"
-CFME_IMG="cfme-rhos-5.7.0.10-1.x86_64.qcow2"
-CFME_IMG_PATH="/home/jcutter/media/$CFME_IMG"
+CFME="$HOSTNAME_PREFIX$1"
+CFME_IMG_PATH="$CFME_IMG_LOCATION/$CFME_IMG_FILE"
+PURPOSE=$2
+IP=$(getent hosts $CFME | awk '{print $1}')
+
+# Main.
 
 export LIBGUESTFS_BACKEND=direct
-WORKDIR=/home/jcutter/work/laptop/cfme
-
-IP=$(getent hosts $CFME | awk '{print $1}')
 
 if [ -z "$IP" ]
 then
@@ -48,7 +59,21 @@ sudo virt-customize -a \
 --upload $WORKDIR/ifcfg-eth0:/etc/sysconfig/network-scripts/ifcfg-eth0 \
 --mkdir /root/.ssh \
 --upload $WORKDIR/authorized_keys:/root/.ssh/authorized_keys \
+--upload $WORKDIR/.bashrc:/root/.bashrc \
+--upload $WORKDIR/.inputrc:/root/.inputrc \
+--upload $WORKDIR/.irbrc:/root/.irbrc \
+--upload $WORKDIR/.vimrc:/root/.vimrc \
 && \
+(
+echo
+echo
+echo "***************************************************************************************"
+echo "*                                                                                     *"
+echo "* After appliance boots to login prompt, close virt-viewer to continue configuration! *"
+echo "*                                                                                     *"
+echo "***************************************************************************************"
+echo
+) && \
 sudo /usr/bin/virt-install \
 --disk path=/var/lib/libvirt/images/$CFME.qcow2 \
 --disk path=/var/lib/libvirt/images/${CFME}_db.qcow2 \
@@ -56,11 +81,12 @@ sudo /usr/bin/virt-install \
 --network network=default \
 --name ${CFME}_${PURPOSE} \
 --cpu host \
---vcpus 4 \
---ram 6144 \
+--vcpus $CPUCOUNT \
+--ram $MEMORY_MB \
 --os-type=linux \
 --os-variant=rhel7 \
 && \
-
-ssh-keygen -R $CFME
-
+(
+ssh-keygen -R $CFME > /dev/null 2>&1
+ssh -o StrictHostKeyChecking=no -t root@$CFME appliance_console_cli --region=1 --internal --password=smartvm --key --dbdisk=/dev/vdb
+)

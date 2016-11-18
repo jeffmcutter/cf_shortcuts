@@ -1,0 +1,66 @@
+#!/bin/bash -x
+
+NAME=$(basename $0)
+function usage {
+  echo "Usage: $NAME ## purpose"
+  echo "\t## is a number for cfme name found in hosts file."
+  echo "\tpurpose is a one word name to remember this appliance by."
+  echo
+  exit 1
+}
+if [ -z "$1" ]
+then
+  usage
+fi
+
+if [ -z "$2" ]
+then
+  usage
+fi
+
+CFME="cfme$1"
+PURPOSE=$2
+
+#CFME_IMG="cfme-rhos-5.6.2.2-1.x86_64.qcow2"
+CFME_IMG="cfme-rhos-5.7.0.10-1.x86_64.qcow2"
+CFME_IMG_PATH="/home/jcutter/media/$CFME_IMG"
+
+export LIBGUESTFS_BACKEND=direct
+WORKDIR=/home/jcutter/work/laptop/cfme
+
+IP=$(getent hosts $CFME | awk '{print $1}')
+
+if [ -z "$IP" ]
+then
+  echo "$CFME not found in DNS or /etc/hosts."
+  exit 1
+fi
+
+sed -i -e "s/^IPADDR=.*/IPADDR=$IP/" $WORKDIR/ifcfg-eth0 \
+&& \
+sudo cp -iv $CFME_IMG_PATH /var/lib/libvirt/images/$CFME.qcow2 \
+&& \
+sudo qemu-img create -f qcow2 /var/lib/libvirt/images/${CFME}_db.qcow2 40G \
+&& \
+sudo virt-customize -a \
+/var/lib/libvirt/images/$CFME.qcow2 \
+--hostname $CFME \
+--upload $WORKDIR/ifcfg-eth0:/etc/sysconfig/network-scripts/ifcfg-eth0 \
+--mkdir /root/.ssh \
+--upload $WORKDIR/authorized_keys:/root/.ssh/authorized_keys \
+&& \
+sudo /usr/bin/virt-install \
+--disk path=/var/lib/libvirt/images/$CFME.qcow2 \
+--disk path=/var/lib/libvirt/images/${CFME}_db.qcow2 \
+--import \
+--network network=default \
+--name ${CFME}_${PURPOSE} \
+--cpu host \
+--vcpus 4 \
+--ram 6144 \
+--os-type=linux \
+--os-variant=rhel7 \
+&& \
+
+ssh-keygen -R $CFME
+

@@ -106,11 +106,14 @@ then
   exit
 fi
 
+ARGS=$*
+ARGS=$(echo $ARGS | sed 's/*/\\*/g')
+
 for i in $SERVERS
 do
   echo "*** $i ***"
   case $NAME in
-    "cfssh") ssh root@$i $* ;;
+    "cfssh") ssh root@$i $ARGS ;;
     "cfscp") scp $1 root@$i:$2 ;;
     "cfcollect") scp root@$i:$1 $2/$(basename $1)-$i ;;
   esac

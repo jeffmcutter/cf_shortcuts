@@ -1,0 +1,8 @@
+# object_name, object_type, tag_category, tag
+# Example:
+#rhelvm01,vm,environment,dev
+#rhevh01,host,environment,dev
+
+#jul22001,vm,environment,dev
+#jul22002,vm,environment,dev
+#esxi01.localdomain,host,environment,dev

@@ -1,0 +1,8 @@
+#!/bin/bash
+# SAMPLE of how to run bulk_tag.rb.  Requires modification to suit where you place your files.
+
+cd /var/www/miq/vmdb
+
+script/rails runner /path/bulk_tag.rb -f /path/input.csv
+
+cd -

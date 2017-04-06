@@ -19,6 +19,7 @@ function usage {
     "cfssh") echo "USAGE: $NAME group command args" ;;
     "cfscp") echo "USAGE: $NAME group local_file remote_dest_dir" ;;
     "cfcollect") echo "USAGE: $NAME group remote_file local_dest_dir" ;;
+    "cfgrep") echo "USAGE: $NAME [-i] group pattern log_file [count]" ;;
   esac
   echo
   echo "	Available groups:"
@@ -36,6 +37,16 @@ function usage {
   exit 1
 }
 
+GREP="egrep"
+if [ "$NAME" == 'cfgrep' ]
+then
+  if [ "$1" == '-i' ]
+  then
+    GREP="$GREP -i"
+    shift
+  fi
+fi
+
 if [[ $1 == "-h" || $1 == "--help" || $# -eq 0 ]]
 then
   usage
@@ -47,6 +58,14 @@ then
   then
     echo
     echo "Not enough arguments!"
+    usage
+  fi
+elif [ "$NAME" == "cfgrep" ]
+then
+  if [[ $# -ne 3 && $# -ne 4 ]]
+  then
+    echo
+    echo "Wrong number of arguments!"
     usage
   fi
 else
@@ -106,6 +125,21 @@ then
   exit
 fi
 
+TAIL="tail -5"
+if [ "$NAME" == 'cfgrep' ]
+then
+  PATTERN="$1"
+  LOG=$2
+  if [ "$(echo $LOG | cut -c1)" != "/" ]
+  then
+    LOG="/var/www/miq/vmdb/log/$(echo $LOG | sed 's/\.log$//').log"
+  fi
+  if [ -n "$3" ]
+  then
+    TAIL="tail -$3"
+  fi
+fi
+
 ARGS=$*
 ARGS=$(echo $ARGS | sed 's/*/\\*/g')
 
@@ -116,6 +150,7 @@ do
     "cfssh") ssh root@$i $ARGS ;;
     "cfscp") scp $1 root@$i:$2 ;;
     "cfcollect") scp root@$i:$1 $2/$(basename $1)-$i ;;
+    "cfgrep") ssh root@$i $GREP "$PATTERN" $LOG \| $TAIL
   esac
   echo
 done

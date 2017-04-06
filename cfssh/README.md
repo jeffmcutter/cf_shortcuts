@@ -10,6 +10,8 @@ cfscp (SCP file TO each host in group)
 
 cfcollect (SCP file FROM each host in group)
 
+cfgrep (SSH to each host in group and grep log_file for pattern limited by tail)
+
 **Note that this program can enable you to do things faster, including mistakes, use at your own risk.**
 
 Files can be placed into /root/bin and then cfssh will be in root's PATH.
@@ -34,6 +36,22 @@ USAGE: cfcollect group remote_file local_dest_dir
 	zone1
 	zone2
 
+USAGE: cfgrep [-i] group pattern log_file [count]
+
+	Available groups:
+	all
+	all_no_db
+	db
+	ui
+	workers
+	zone1
+	zone2
+
+To see matching hosts for a given group, use:
+
+cfgrep <group> list
+
+-h | --help for this usage statement.
 
 
 To see matching hosts for a given group, use:
@@ -76,7 +94,14 @@ README.md                                               100% 1020     1.0KB/s   
 
 $ ls /tmp/README*
 /tmp/README.md-cfme01  /tmp/README.md-pxe01
+
+$ cfgrep test ERROR evm  1
+
+*** cfme30 ***
+[----] E, [2017-04-05T20:52:33.973282 #1660:89114c] ERROR -- : /opt/rh/cfme-gemset/gems/awesome_spawn-1.4.1/lib/awesome_spawn.rb:105:in `run!'
+
 ```
+
 
 # Sample cfhosts file:
 

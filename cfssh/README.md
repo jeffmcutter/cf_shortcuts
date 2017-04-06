@@ -23,29 +23,25 @@ Update cfhosts file with appropriate hostnames or IP addresses and group assignm
 ```
 USAGE: cfssh group command args
 
+	Available groups:
+	all
+	all_no_db
+	db
+	ui
+	workers
+	zone1
+	zone2
+
 USAGE: cfscp group local_file remote_dest_dir
 
 USAGE: cfcollect group remote_file local_dest_dir
 
-	Available groups:
-	all
-	all_no_db
-	db
-	ui
-	workers
-	zone1
-	zone2
-
 USAGE: cfgrep [-i] group pattern log_file [count]
 
-	Available groups:
-	all
-	all_no_db
-	db
-	ui
-	workers
-	zone1
-	zone2
+  For CloudForms logs, log_file can be in the format of evm or evm.log
+  For any other files to grep, use /the/full/path/to/file
+  -i is optional to ignore case with grep
+  count is optional and used with tail to limit the output, default is 3
 
 To see matching hosts for a given group, use:
 

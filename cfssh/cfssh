@@ -6,6 +6,7 @@
 # Note: This program can enable you to do things faster, including mistakes, use at your own risk.
 #
 
+TAIL_NUMBER=3
 NAME=$(basename $0)
 DIR=$(dirname $0)
 cfhosts_cmd="$DIR/cfhosts.rb"
@@ -19,7 +20,15 @@ function usage {
     "cfssh") echo "USAGE: $NAME group command args" ;;
     "cfscp") echo "USAGE: $NAME group local_file remote_dest_dir" ;;
     "cfcollect") echo "USAGE: $NAME group remote_file local_dest_dir" ;;
-    "cfgrep") echo "USAGE: $NAME [-i] group pattern log_file [count]" ;;
+    "cfgrep")
+      echo "USAGE: $NAME [-i] group pattern log_file [count]"
+      echo
+      echo "  For CloudForms logs, log_file can be in the format of evm or evm.log"
+      echo "  For any other files to grep, use /the/full/path/to/file"
+      echo "  -i is optional to ignore case with grep"
+      echo "  count is optional and used with tail to limit the output, default is $TAIL_NUMBER"
+      echo
+      ;;
   esac
   echo
   echo "	Available groups:"
@@ -125,7 +134,6 @@ then
   exit
 fi
 
-TAIL="tail -5"
 if [ "$NAME" == 'cfgrep' ]
 then
   PATTERN="$1"
@@ -136,8 +144,9 @@ then
   fi
   if [ -n "$3" ]
   then
-    TAIL="tail -$3"
+    TAIL_NUMBER=$3
   fi
+  TAIL="tail -$TAIL_NUMBER"
 fi
 
 ARGS=$*

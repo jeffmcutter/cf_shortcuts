@@ -103,6 +103,15 @@ then
   usage
 fi
 
+# Check that we have a ruby available for cfhosts_cmd to use
+/usr/bin/env ruby --version > /dev/null 2>&1
+if [ $? -ne 0 ]
+then
+  echo
+  echo "Unable to find ruby with /usr/bin/env ruby.  Please make sure ruby is installed."
+  usage
+fi
+
 group_good=false
 
 for i in $groups

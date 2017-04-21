@@ -7,7 +7,7 @@ HOSTNAME_PREFIX="cfme"
 #CFME_IMG_FILE="cfme-rhos-5.7.0.17-1.x86_64.qcow2"
 CFME_IMG_FILE="cfme-rhos-5.7.1.3-1.x86_64.qcow2"
 CFME_IMG_LOCATION="/home/jcutter/media"
-WORKDIR=/home/jcutter/work/laptop/cfme
+WORKDIR=/home/jcutter/work/cfme_kvm_deploy
 CPUCOUNT=4
 MEMORY_MB=6144
 

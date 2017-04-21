@@ -32,12 +32,27 @@ then
   usage
 fi
 
+which tcping > /dev/null 2>&1
+if [ $? -ne 0 ]
+then
+  echo "tcping not found, please install and try again."
+  exit 1
+fi
+
 # Derived Variables.
 
 CFME="$HOSTNAME_PREFIX$1"
 CFME_IMG_PATH="$CFME_IMG_LOCATION/$CFME_IMG_FILE"
 PURPOSE=$2
 IP=$(getent hosts $CFME | awk '{print $1}')
+if [ -r "$WORKDIR/network" ]
+then
+  NETWORK=$(cat $WORKDIR/network)
+else
+  echo "$WORKDIR/network does not exist!"
+  echo "Please populate $WORKDIR/network with the key=value pair that is passed to virt-install --network"
+  exit 1
+fi
 
 # Main.
 
@@ -66,28 +81,36 @@ sudo virt-customize -a \
 --upload $WORKDIR/.irbrc:/root/.irbrc \
 --upload $WORKDIR/.vimrc:/root/.vimrc \
 && \
-(
-echo
-echo
-echo "***************************************************************************************"
-echo "*                                                                                     *"
-echo "* After appliance boots to login prompt, close virt-viewer to continue configuration! *"
-echo "*                                                                                     *"
-echo "***************************************************************************************"
-echo
-) && \
 sudo /usr/bin/virt-install \
 --disk path=/var/lib/libvirt/images/$CFME.qcow2 \
 --disk path=/var/lib/libvirt/images/${CFME}_db.qcow2 \
 --import \
---network network=default \
+--network $NETWORK \
 --name ${CFME}_${PURPOSE} \
 --cpu host \
 --vcpus $CPUCOUNT \
 --ram $MEMORY_MB \
 --os-type=linux \
 --os-variant=rhel7 \
+--noautoconsole \
 && \
+(
+  # Wait for SSH port to be open.
+  ALIVE=false
+  until [ $ALIVE == "true" ]
+  do
+    sleep 10
+    tcping $CFME 22 > /dev/null 2>&1
+    if [ $? -eq 0 ]
+    then
+      echo "$CFME port 22 open."
+      ALIVE=true
+      sleep 5
+    else
+      echo "$CFME port 22 closed."
+    fi
+  done
+) && \
 (
 ssh-keygen -R $CFME > /dev/null 2>&1
 ssh -o StrictHostKeyChecking=no -t root@$CFME appliance_console_cli --region=1 --internal --password=smartvm --key --dbdisk=/dev/vdb

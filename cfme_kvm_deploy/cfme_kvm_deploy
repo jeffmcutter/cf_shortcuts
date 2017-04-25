@@ -114,4 +114,6 @@ sudo /usr/bin/virt-install \
 (
 ssh-keygen -R $CFME > /dev/null 2>&1
 ssh -o StrictHostKeyChecking=no -t root@$CFME appliance_console_cli --region=1 --internal --password=smartvm --key --dbdisk=/dev/vdb
+sleep 5
+ssh root@$CFME systemctl start evmserverd
 )

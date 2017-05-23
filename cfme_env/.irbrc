@@ -28,9 +28,12 @@ class IRB::Irb
    end
 end
 
-# Retrieve a new EVM object and set it to the $evm attribute.
 def get_evm
+    # Retrieve a new EVM object and set it to the $evm attribute.
     MiqAeMethodService::MiqAeService.new(MiqAeEngine::MiqAeWorkspaceRuntime.new)
 end
 
 $evm = get_evm
+
+# Lower logging level.
+ActiveRecord::Base.logger.level = 1

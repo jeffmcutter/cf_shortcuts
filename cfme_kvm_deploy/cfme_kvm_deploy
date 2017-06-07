@@ -74,6 +74,8 @@ sudo qemu-img create -f qcow2 /var/lib/libvirt/images/${CFME}_db.qcow2 40G \
 sudo virt-customize -a \
 /var/lib/libvirt/images/$CFME.qcow2 \
 --hostname $CFME \
+--touch /.autorelabel \
+--run-command '/bin/yum -y remove cloud-init' \
 --upload $WORKDIR/ifcfg-eth0:/etc/sysconfig/network-scripts/ifcfg-eth0 \
 --mkdir /root/.ssh \
 --upload $WORKDIR/authorized_keys:/root/.ssh/authorized_keys \
@@ -114,6 +116,7 @@ sudo /usr/bin/virt-install \
 ) && \
 (
 ssh-keygen -R $CFME > /dev/null 2>&1
+ssh-copy-id -o StrictHostKeyChecking=no root@$CFME
 ssh -o StrictHostKeyChecking=no -t root@$CFME appliance_console_cli --region=1 --internal --password=smartvm --key --dbdisk=/dev/vdb
 sleep 5
 ssh root@$CFME systemctl start evmserverd

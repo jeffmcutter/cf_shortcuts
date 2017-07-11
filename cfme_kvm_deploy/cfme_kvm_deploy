@@ -3,6 +3,8 @@
 # Configuration Variables.
 
 HOSTNAME_PREFIX="cfme"
+#CFME_IMG_FILE="cfme-rhos-5.4-33.x86_64.qcow2"
+#CFME_IMG_FILE="cfme-rhos-5.6.4.2-1.x86_64.qcow2"
 #CFME_IMG_FILE="cfme-rhos-5.6.2.2-1.x86_64.qcow2"
 #CFME_IMG_FILE="cfme-rhos-5.7.0.17-1.x86_64.qcow2"
 #CFME_IMG_FILE="cfme-rhos-5.7.1.3-1.x86_64.qcow2"
@@ -45,6 +47,7 @@ fi
 CFME="$HOSTNAME_PREFIX$1"
 CFME_IMG_PATH="$CFME_IMG_LOCATION/$CFME_IMG_FILE"
 PURPOSE=$2
+DEST_NAME="${CFME}_${PURPOSE}"
 IP=$(getent hosts $CFME | awk '{print $1}')
 if [ -r "$WORKDIR/network" ]
 then
@@ -67,9 +70,9 @@ fi
 
 sed -i -e "s/^IPADDR=.*/IPADDR=$IP/" $WORKDIR/ifcfg-eth0 \
 && \
-sudo cp -iv $CFME_IMG_PATH /var/lib/libvirt/images/$CFME.qcow2 \
+sudo cp -iv $CFME_IMG_PATH /var/lib/libvirt/images/$DEST_NAME.qcow2 \
 && \
-sudo qemu-img create -f qcow2 /var/lib/libvirt/images/${CFME}_db.qcow2 40G \
+sudo qemu-img create -f qcow2 /var/lib/libvirt/images/${DEST_NAME}_db.qcow2 40G \
 && \
 sudo virt-customize -a \
 /var/lib/libvirt/images/$CFME.qcow2 \
@@ -89,7 +92,7 @@ sudo /usr/bin/virt-install \
 --disk path=/var/lib/libvirt/images/${CFME}_db.qcow2 \
 --import \
 --network $NETWORK \
---name ${CFME}_${PURPOSE} \
+--name $DEST_NAME \
 --cpu host \
 --vcpus $CPUCOUNT \
 --ram $MEMORY_MB \

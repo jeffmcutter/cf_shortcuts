@@ -75,7 +75,7 @@ sudo cp -iv $CFME_IMG_PATH /var/lib/libvirt/images/$DEST_NAME.qcow2 \
 sudo qemu-img create -f qcow2 /var/lib/libvirt/images/${DEST_NAME}_db.qcow2 40G \
 && \
 sudo virt-customize -a \
-/var/lib/libvirt/images/$CFME.qcow2 \
+/var/lib/libvirt/images/$DEST_NAME.qcow2 \
 --hostname $CFME \
 --touch /.autorelabel \
 --run-command '/bin/yum -y remove cloud-init' \
@@ -88,8 +88,8 @@ sudo virt-customize -a \
 --upload $WORKDIR/.vimrc:/root/.vimrc \
 && \
 sudo /usr/bin/virt-install \
---disk path=/var/lib/libvirt/images/$CFME.qcow2 \
---disk path=/var/lib/libvirt/images/${CFME}_db.qcow2 \
+--disk path=/var/lib/libvirt/images/$DEST_NAME.qcow2 \
+--disk path=/var/lib/libvirt/images/${DEST_NAME}_db.qcow2 \
 --import \
 --network $NETWORK \
 --name $DEST_NAME \

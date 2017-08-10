@@ -20,14 +20,19 @@ function usage {
     "cfssh") echo "USAGE: $NAME group command args" ;;
     "cfscp") echo "USAGE: $NAME group local_file remote_dest_dir" ;;
     "cfcollect") echo "USAGE: $NAME group remote_file local_dest_dir" ;;
-    "cfgrep")
+    "cfgrep"|"cfgrep-collate")
       echo "USAGE: $NAME [-i] group pattern log_file [count]"
       echo
       echo "  For CloudForms logs, log_file can be in the format of evm or evm.log"
       echo "  For any other files to grep, use /the/full/path/to/file"
       echo "  -i is optional to ignore case with grep"
-      echo "  count is optional and used with tail to limit the output, default is $TAIL_NUMBER"
+      echo "  count is optional with cfgrep only and used with tail to limit the output, default is $TAIL_NUMBER"
+      ;;
+    "cfgrep-request")
+      echo "USAGE: $NAME [-i] group request_id [log_file]"
       echo
+      echo "  Will grep and collate CloudForms logs for a request_id and all its associated tasks"
+      echo "  log_file is optional and defaults to automation.log"
       ;;
   esac
   echo
@@ -46,8 +51,15 @@ function usage {
   exit 1
 }
 
+function clean_tmp_file {
+  rm -f $TMPFILE
+}
+
+trap clean_tmp_file EXIT
+
+
 GREP="egrep"
-if [ "$NAME" == 'cfgrep' ]
+if [[ "$NAME" == 'cfgrep' || "$NAME" == 'cfgrep-collate' ]]
 then
   if [ "$1" == '-i' ]
   then
@@ -72,6 +84,14 @@ then
 elif [ "$NAME" == "cfgrep" ]
 then
   if [[ $# -ne 3 && $# -ne 4 ]]
+  then
+    echo
+    echo "Wrong number of arguments!"
+    usage
+  fi
+elif [ "$NAME" == "cfgrep-request" ]
+then
+  if [[ $# -ne 2 && $# -ne 3 ]]
   then
     echo
     echo "Wrong number of arguments!"
@@ -143,10 +163,28 @@ then
   exit
 fi
 
-if [ "$NAME" == 'cfgrep' ]
+if [[ "$NAME" == 'cfgrep' || "$NAME" == 'cfgrep-collate' || "$NAME" == 'cfgrep-request' ]]
 then
   PATTERN="$1"
+  if [ "$NAME" == 'cfgrep-request' ]
+  then
+    REQUEST_ID=$(echo $PATTERN | sed 's/,//g')
+    echo "*** looking for tasks associated with request_id: $REQUEST_ID ***"
+    cd /var/www/miq/vmdb
+    TASK_IDS=$(echo "select id from miq_request_tasks where miq_request_id = $REQUEST_ID" | rails db | awk '$1!="id" && !/^---/ && !/^\(/ {print $1}' | sort -n)
+    echo
+    TASK_IDS=$(echo $TASK_IDS)
+    cd - > /dev/null
+    PATTERN="$REQUEST_ID|$(echo $TASK_IDS | sed 's/ /|/g')"
+    echo "*** looking for request_id: $REQUEST_ID and task_ids: $TASK_IDS ***"
+    echo
+  fi
+  PATTERN=$(echo $PATTERN | sed -e 's/|/\\|/g')
   LOG=$2
+  if [[ "$NAME" == 'cfgrep-request' && -z "$LOG" ]]
+  then
+    LOG='automation.log'
+  fi
   if [ "$(echo $LOG | cut -c1)" != "/" ]
   then
     LOG="/var/www/miq/vmdb/log/$(echo $LOG | sed 's/\.log$//').log"
@@ -155,11 +193,23 @@ then
   then
     TAIL_NUMBER=$3
   fi
-  TAIL="tail -$TAIL_NUMBER"
+  if [[ "$NAME" == 'cfgrep' ]]
+  then
+    TAIL="tail -$TAIL_NUMBER"
+  else
+    TAIL="tail"
+  fi
 fi
 
 ARGS=$*
 ARGS=$(echo $ARGS | sed 's/*/\\*/g')
+
+TMPFILE="/tmp/.$NAME.$$"
+if [ -e "$TMPFILE" ]
+then
+  echo "TMPFILE $TMPFILE already exists!"
+  exit 1
+fi
 
 for i in $SERVERS
 do
@@ -168,7 +218,15 @@ do
     "cfssh") ssh root@$i $ARGS ;;
     "cfscp") scp $1 root@$i:$2 ;;
     "cfcollect") scp root@$i:$1 $2/$(basename $1)-$i ;;
-    "cfgrep") ssh root@$i $GREP "$PATTERN" $LOG \| $TAIL
+    "cfgrep") ssh root@$i $GREP "$PATTERN" $LOG \| $TAIL ;;
+    "cfgrep-collate"|"cfgrep-request") ssh root@$i $GREP "$PATTERN" $LOG | sed -e "s/^/[$i] /" >> $TMPFILE ;;
   esac
   echo
 done
+
+if [[ "$NAME" == 'cfgrep-collate' || "$NAME" == 'cfgrep-request' ]]
+then
+  echo "*** collating results ***"
+  sort -k 3 $TMPFILE | less
+  echo
+fi

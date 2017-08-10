@@ -97,6 +97,12 @@ then
     echo "Wrong number of arguments!"
     usage
   fi
+  if [ ! -d '/var/www/miq/vmdb' ]
+  then
+    echo
+    echo "$NAME will only work when run from a CloudForms appliance!"
+    usage
+  fi
 else
   if [ $# -ne 3 ]
   then

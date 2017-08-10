@@ -233,6 +233,6 @@ done
 if [[ "$NAME" == 'cfgrep-collate' || "$NAME" == 'cfgrep-request' ]]
 then
   echo "*** collating results ***"
-  sort -k 3 $TMPFILE | less
+  sort -k 4 $TMPFILE | less
   echo
 fi

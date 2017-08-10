@@ -14,7 +14,7 @@ cfgrep (SSH to each host in group and grep log_file for pattern limited by tail)
 
 cfgrep-collate (SSH to each host in group and grep log_file for pattern and collate results)
 
-cfgrep-request (look up tasks associated with request_id and SSH to each host in group and grep log_file for request_id and task_ids)
+cfgrep-request (look up tasks associated with request_id and SSH to each host in group and grep log_file for request_id and task_ids and collate results)
 
 **Note that this program can enable you to do things faster, including mistakes, use at your own risk.**
 

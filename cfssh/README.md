@@ -12,6 +12,10 @@ cfcollect (SCP file FROM each host in group)
 
 cfgrep (SSH to each host in group and grep log_file for pattern limited by tail)
 
+cfgrep-collate (SSH to each host in group and grep log_file for pattern and collate results)
+
+cfgrep-request (look up tasks associated with request_id and SSH to each host in group and grep log_file for request_id and task_ids)
+
 **Note that this program can enable you to do things faster, including mistakes, use at your own risk.**
 
 Files can be placed into /root/bin and then cfssh will be in root's PATH.
@@ -42,6 +46,18 @@ USAGE: cfgrep [-i] group pattern log_file [count]
   For any other files to grep, use /the/full/path/to/file
   -i is optional to ignore case with grep
   count is optional and used with tail to limit the output, default is 3
+
+USAGE: cfgrep-collate [-i] group pattern log_file [count]
+
+  For CloudForms logs, log_file can be in the format of evm or evm.log
+  For any other files to grep, use /the/full/path/to/file
+  -i is optional to ignore case with grep
+  count is optional with cfgrep only and used with tail to limit the output, default is 3
+
+USAGE: cfgrep-request [-i] group request_id [log_file]
+
+  Will grep and collate CloudForms logs for a request_id and all its associated tasks
+  log_file is optional and defaults to automation.log
 
 To see matching hosts for a given group, use:
 

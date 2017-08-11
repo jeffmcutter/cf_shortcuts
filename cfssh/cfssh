@@ -56,6 +56,9 @@ function usage_commas {
 
 function usage_tail {
   echo "  -l can be used to place output in separate window panes, by default output is merged"
+  echo "  In multitail:"
+  echo "    Move around the buffer similar to less by pressing 'b'"
+  echo "    Exit whatever context you are in by pressing 'q'"
 }
 
 function usage_help {

@@ -113,7 +113,7 @@ trap clean_tmp_file EXIT
 GREP="egrep"
 L='L'
 
-while getopts iLh OPT
+while getopts ilh OPT
 do
   case $OPT in
     l) L='l' ;;

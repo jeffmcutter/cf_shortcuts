@@ -39,7 +39,7 @@ function usage_case {
 function usage_log_file {
   echo "  log_file is optional and defaults to automation.log"
   echo "    For CloudForms logs, log_file can be in the format of evm or evm.log"
-  echo "    For any other files to grep, use /the/full/path/to/file"
+  echo "    For any other files, use /the/full/path/to/file"
 }
 
 function usage_pattern {
@@ -252,6 +252,10 @@ then
     PATTERN="$REQUEST_ID|$(echo $TASK_IDS | sed 's/ /|/g')"
     echo "*** looking for request_id: $REQUEST_ID and task_ids: $TASK_IDS ***"
     echo
+    if [ "$NAME" == 'cftail-request' ]
+    then
+      sleep 1
+    fi
   fi
   PATTERN=$(echo $PATTERN | sed -e 's/|/\\|/g')
   LOG=$2

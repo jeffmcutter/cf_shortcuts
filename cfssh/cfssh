@@ -44,9 +44,9 @@ function usage_log_file {
 
 function usage_pattern {
   echo "  pattern may be specified as a regex suitable for egrep taking care to prevent the shell from interpretation"
-  if [[ "$NAME" == 'cftail' || "$NAME" == 'cftail-request' ]]
+  if [[ "$NAME" != 'cfgrep-request' || "$NAME" != 'cftail-request' ]]
   then
-    echo "  pattern may be specified as 'nogrep' to have no grep"
+    echo "  pattern may be specified as 'nogrep' to have no grep or use cat instead of grep"
   fi
 }
 
@@ -86,11 +86,11 @@ function usage {
   case $NAME in
     "cfssh") usage_common "group command args" "ssh and run command with args" ;;
     "cfscp") usage_common "group local_file remote_dest_dir" "push files out using scp" "  Only one file is supported at a time" ;;
-    "cfcollect") usage_common "group remote_file local_dest_dir" "pull files in using scp" "  Wildcards are accepted for remote_file but should only match one file" "  local_files are prepended with remote hostname" ;;
+    "cfcollect") usage_common "group remote_file local_dest_dir" "pull files in using scp" "  Wildcards are accepted for remote_file but should only match one file" "  local_files are appended with remote hostname" ;;
     "cfgrep") usage_grep "[-i] group pattern [log_file] [count]" "grep log_file for pattern and show last count number of lines" "  count is optional and used with tail to limit the output, default is $TAIL_NUMBER" "  If count is to be specified, log_file must also be specified" "  To show all lines specify count as 'all'";;
     "cfgrep-collate") usage_grep "[-i] group pattern [log_file]" "grep log_file for pattern and collate all results and display using less" ;;
     "cfgrep-request") usage_request "group request_id [log_file]" "grep log_file for request_id and all its associated tasks and collate all results and display with less" ;;
-    "cftail") usage_grep "[-i] [-l] group pattern [log_file]" "multitail and grep pattern on specified group for specified log_file" "$(eval usage_tail)" ;;
+    "cftail") usage_grep "[-i] [-l] group pattern [log_file]" "multitail and optionally grep pattern on specified group for specified log_file" "$(eval usage_tail)" ;;
     "cftail-request") usage_request "[-l] group request_id [log_file]" "multitail and grep request_id and all its associated tasks" "$(eval usage_tail)" ;;
   esac
   echo "AVAILABLE GROUPS:"
@@ -243,6 +243,14 @@ fi
 if [[ "$NAME" == 'cfgrep' || "$NAME" == 'cfgrep-collate' || "$NAME" == 'cfgrep-request' || "$NAME" == 'cftail' || $NAME == 'cftail-request' ]]
 then
   PATTERN="$1"
+  if [ "$PATTERN" == 'nogrep' ]
+  then
+    if [[ "$NAME" == 'cfgrep' || "$NAME" == 'cfgrep-collate' ]]
+    then
+      GREP='cat'
+    PATTERN=''
+    fi
+  fi
   if [[ "$NAME" == 'cfgrep-request' || $NAME == 'cftail-request' ]]
   then
     REQUEST_ID=$(echo $PATTERN | sed 's/,//g')

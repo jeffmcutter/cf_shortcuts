@@ -1,4 +1,4 @@
-#cfssh cfscp cfcollect cfgrep and cftail utilities
+# cfssh cfscp cfcollect cfgrep and cftail utilities
 
 This is a simple tool to allow for running commands via SSH and copying files with SCP against multiple CloudForms appliances in an environment based on groups defined in hosts files.
 
@@ -35,7 +35,7 @@ You can get multitail from EPEL (https://fedoraproject.org/wiki/EPEL).
 **-request commands can only be run from a ManageIQ/CloudForms appliance in the region in question.*
 
 
-#Usages:
+# Usages:
 ## cfssh
 ```
 
@@ -259,7 +259,7 @@ cftail-request <group> list
 ```
 
 
-#Examples:
+# Examples:
 ## cfssh
 ```
 $ cfssh all uptime

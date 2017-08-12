@@ -36,7 +36,7 @@ You can get multitail from EPEL (https://fedoraproject.org/wiki/EPEL).
 
 
 #Usages:
-##cfssh
+## cfssh
 ```
 
 DESCRIPTION: ssh and run command with args
@@ -56,7 +56,7 @@ To see matching hosts for a given group, use:
 cfssh <group> list
 
 ```
-##cfscp
+## cfscp
 ```
 
 DESCRIPTION: push files out using scp
@@ -80,7 +80,7 @@ To see matching hosts for a given group, use:
 cfscp <group> list
 
 ```
-##cfcollect
+## cfcollect
 ```
 
 DESCRIPTION: pull files in using scp
@@ -105,7 +105,7 @@ To see matching hosts for a given group, use:
 cfcollect <group> list
 
 ```
-##cfgrep
+## cfgrep
 ```
 
 DESCRIPTION: grep log_file for pattern and show last count number of lines
@@ -137,7 +137,7 @@ To see matching hosts for a given group, use:
 cfgrep <group> list
 
 ```
-##cfgrep-collate
+## cfgrep-collate
 ```
 
 DESCRIPTION: grep log_file for pattern and collate all results and display using less
@@ -166,7 +166,7 @@ To see matching hosts for a given group, use:
 cfgrep-collate <group> list
 
 ```
-##cfgrep-request
+## cfgrep-request
 ```
 
 DESCRIPTION: grep log_file for request_id and all its associated tasks and collate all results and display with less
@@ -193,7 +193,7 @@ To see matching hosts for a given group, use:
 cfgrep-request <group> list
 
 ```
-##cftail
+## cftail
 ```
 
 DESCRIPTION: multitail and optionally grep pattern on specified group for specified log_file
@@ -226,7 +226,7 @@ To see matching hosts for a given group, use:
 cftail <group> list
 
 ```
-##cftail-request
+## cftail-request
 ```
 
 DESCRIPTION: multitail and grep request_id and all its associated tasks
@@ -260,7 +260,7 @@ cftail-request <group> list
 
 
 #Examples:
-##cfssh
+## cfssh
 ```
 $ cfssh all uptime
 
@@ -273,7 +273,7 @@ $ cfssh all uptime
 *** cfme03 ***
  16:19:53 up  1:15,  0 users,  load average: 0.07, 0.15, 0.14
 ```
-##cfscp
+## cfscp
 ```
 $ cfscp all README.md /tmp/
 
@@ -282,7 +282,7 @@ README.md                                               100% 1020     1.0KB/s   
 
 *** cfme02 ***
 README.md                                               100% 1020     1.0KB/s   00:00    
-##cfcollect
+## cfcollect
 ```
 
 $ cfgrep test ERROR evm  1
@@ -305,7 +305,7 @@ hostname                                                                        
 $ ls /tmp/*hostname*
 /tmp/hostname-cfme1  /tmp/hostname-cfme2  /tmp/hostname-cfme3
 ```
-##cfgrep-collate
+## cfgrep-collate
 ```
 $ cfgrep-collate all "MiqEventHandler#log_status" evm
 
@@ -322,7 +322,7 @@ $ cfgrep-collate all "MiqEventHandler#log_status" evm
 [cfme1] [----] I, [2017-08-11T19:11:22.361405 #2949:b81140]  INFO -- : Q-task_id([log_status]) MIQ(MiqEventHandler#log_status) [Event Handler] Worker ID [1000000001071], PID [2922], GUID [c0f9c28a-7ed6-11e7-8b18-525400431635], Last Heartbeat [2017-08-11 23:11:14 UTC], Process Info: Memory Usage [310091776], Memory Size [652206080], Proportional Set Size: [203977000], Memory % [3.01], CPU Time [785.0], CPU % [0.09], Priority [27]
 [cfme2] [----] I, [2017-08-11T19:11:24.019597 #2765:623130]  INFO -- : Q-task_id([log_status]) MIQ(MiqEventHandler#log_status) [Event Handler] Worker ID [1000000002270], PID [2756], GUID [f99103f2-7eda-11e7-a70f-5254003dad57], Last Heartbeat [2017-08-11 23:11:21 UTC], Process Info: Memory Usage [338751488], Memory Size [672755712], Proportional Set Size: [235704000], Memory % [3.28], CPU Time [774.0], CPU % [0.12], Priority [27]
 ```
-##cfgrep-request
+## cfgrep-request
 ```
 $ cfgrep-request all 1,000,000,000,088
 
@@ -342,7 +342,7 @@ $ cfgrep-request all 1,000,000,000,088
 [cfme2] [----] I, [2017-08-11T19:30:25.664169 #2773:3e3f758]  INFO -- : Q-task_id([service_template_provision_task_1000000000087]) Updated namespace [/System/Process/REQUEST?MiqProvisionRequest%3A%3Amiq_provision_request=1000000000088&MiqRequest%3A%3Amiq_request=1000000000088&MiqServer%3A%3Amiq_server=1000000000001&User%3A%3Auser=1000000000001&message=get_vmname&object_name=REQUEST&request=UI_PROVISION_INFO&vmdb_object_type=miq_provision_request  ManageIQ/System]
 ...
 ```
-##cftail
+## cftail
 ```
 $ cftail all "ERROR|WARN" evm
 
@@ -359,7 +359,7 @@ Running: multitail -L "ssh cfme1 tail -f /var/www/miq/vmdb/log/evm.log \| egrep 
 [cfme2] [----] W, [2017-08-11T18:36:44.479934 #2738:623130]  WARN -- : MIQ(ManageIQ::Providers::Foreman::ConfigurationManager::RefreshParser#configuration_profile_inv_to_hashes) hostgroup openstack missing: location
 
 ```
-##cftail-request
+## cftail-request
 ```
 $ cftail-request all 1,000,000,000,088
 

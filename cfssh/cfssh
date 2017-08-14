@@ -63,7 +63,7 @@ function usage_tail {
 }
 
 function usage_output {
-  if [ "$NAME" != 'cfgrep' ]
+  if [[ "$NAME" == 'cfgrep-collate' || "$NAME" == 'cfgrep-request' ]]
   then
     echo " -o outputfile can be used to save output to outputfile"
   fi
@@ -98,8 +98,8 @@ function usage {
     "cfgrep") usage_grep "[-i] group pattern [log_file] [count]" "grep log_file for pattern and show last count number of lines" "  count is optional and used with tail to limit the output, default is $TAIL_NUMBER" "  If count is to be specified, log_file must also be specified" "  To show all lines specify count as 'all'";;
     "cfgrep-collate") usage_grep "[-i] [-o outputfile] group pattern [log_file]" "grep log_file for pattern and collate all results and display using less" ;;
     "cfgrep-request") usage_request "[-o outputfile] group request_id [log_file]" "grep log_file for request_id and all its associated tasks and collate all results and display with less" ;;
-    "cftail") usage_grep "[-i] [-l] [-o outputfile] group pattern [log_file]" "multitail and optionally grep pattern on specified group for specified log_file" "$(eval usage_tail)" ;;
-    "cftail-request") usage_request "[-l] [-o outputfile] group request_id [log_file]" "multitail and grep request_id and all its associated tasks" "$(eval usage_tail)" ;;
+    "cftail") usage_grep "[-i] [-l] group pattern [log_file]" "multitail and optionally grep pattern on specified group for specified log_file" "$(eval usage_tail)" ;;
+    "cftail-request") usage_request "[-l] group request_id [log_file]" "multitail and grep request_id and all its associated tasks" "$(eval usage_tail)" ;;
   esac
   echo "AVAILABLE GROUPS:"
   echo
@@ -138,6 +138,13 @@ do
 done
 
 shift $((OPTIND-1))
+
+if [[ "$NAME" != 'cfgrep-collate' && "$NAME" != 'cfgrep-request' && "$SAVEOUT" == 'true' ]]
+then
+  echo
+  echo "$NAME does not support -o option."
+  usage
+fi
 
 if [ "$SAVEOUT" == 'false' ]
 then
@@ -353,10 +360,6 @@ then
 else
 
   COMMAND='multitail'
-  if [ '$SAVEOUT' == 'true' ]
-  then
-    COMMAND="$COMMAND -A $TMPFILE"
-  fi
   if [ "$NAME" == 'cftail-request' ]
   then
     TAIL='tail -n $ALL_TAIL_NUMBER -f'

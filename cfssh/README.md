@@ -36,8 +36,9 @@ You can get multitail from EPEL (https://fedoraproject.org/wiki/EPEL).
 
 
 # Usages:
-## cfssh
+##cfssh
 ```
+/home/jcutter/git/cf_shortcuts/cfssh/cfssh: illegal option -- h
 
 DESCRIPTION: ssh and run command with args
 
@@ -56,8 +57,9 @@ To see matching hosts for a given group, use:
 cfssh <group> list
 
 ```
-## cfscp
+##cfscp
 ```
+/home/jcutter/git/cf_shortcuts/cfssh/cfscp: illegal option -- h
 
 DESCRIPTION: push files out using scp
 
@@ -80,8 +82,9 @@ To see matching hosts for a given group, use:
 cfscp <group> list
 
 ```
-## cfcollect
+##cfcollect
 ```
+/home/jcutter/git/cf_shortcuts/cfssh/cfcollect: illegal option -- h
 
 DESCRIPTION: pull files in using scp
 
@@ -105,8 +108,9 @@ To see matching hosts for a given group, use:
 cfcollect <group> list
 
 ```
-## cfgrep
+##cfgrep
 ```
+/home/jcutter/git/cf_shortcuts/cfssh/cfgrep: illegal option -- h
 
 DESCRIPTION: grep log_file for pattern and show last count number of lines
 
@@ -117,6 +121,7 @@ DETAILS:
   -i is optional to ignore case with grep
   pattern may be specified as a regex suitable for egrep taking care to prevent the shell from interpretation
   pattern may be specified as 'nogrep' to have no grep or use cat instead of grep
+
   log_file is optional and defaults to automation.log
     For CloudForms logs, log_file can be in the format of evm or evm.log
     For any other files, use /the/full/path/to/file
@@ -137,18 +142,20 @@ To see matching hosts for a given group, use:
 cfgrep <group> list
 
 ```
-## cfgrep-collate
+##cfgrep-collate
 ```
+/home/jcutter/git/cf_shortcuts/cfssh/cfgrep-collate: illegal option -- h
 
 DESCRIPTION: grep log_file for pattern and collate all results and display using less
 
-USAGE: cfgrep-collate [-i] group pattern [log_file]
+USAGE: cfgrep-collate [-i] [-o outputfile] group pattern [log_file]
 
 DETAILS:
 
   -i is optional to ignore case with grep
   pattern may be specified as a regex suitable for egrep taking care to prevent the shell from interpretation
   pattern may be specified as 'nogrep' to have no grep or use cat instead of grep
+ -o outputfile can be used to save output to outputfile
   log_file is optional and defaults to automation.log
     For CloudForms logs, log_file can be in the format of evm or evm.log
     For any other files, use /the/full/path/to/file
@@ -166,16 +173,18 @@ To see matching hosts for a given group, use:
 cfgrep-collate <group> list
 
 ```
-## cfgrep-request
+##cfgrep-request
 ```
+/home/jcutter/git/cf_shortcuts/cfssh/cfgrep-request: illegal option -- h
 
 DESCRIPTION: grep log_file for request_id and all its associated tasks and collate all results and display with less
 
-USAGE: cfgrep-request group request_id [log_file]
+USAGE: cfgrep-request [-o outputfile] group request_id [log_file]
 
 DETAILS:
 
   commas in request_id will automatically be stripped
+ -o outputfile can be used to save output to outputfile
   log_file is optional and defaults to automation.log
     For CloudForms logs, log_file can be in the format of evm or evm.log
     For any other files, use /the/full/path/to/file
@@ -193,8 +202,9 @@ To see matching hosts for a given group, use:
 cfgrep-request <group> list
 
 ```
-## cftail
+##cftail
 ```
+/home/jcutter/git/cf_shortcuts/cfssh/cftail: illegal option -- h
 
 DESCRIPTION: multitail and optionally grep pattern on specified group for specified log_file
 
@@ -205,6 +215,7 @@ DETAILS:
   -i is optional to ignore case with grep
   pattern may be specified as a regex suitable for egrep taking care to prevent the shell from interpretation
   pattern may be specified as 'nogrep' to have no grep or use cat instead of grep
+
   log_file is optional and defaults to automation.log
     For CloudForms logs, log_file can be in the format of evm or evm.log
     For any other files, use /the/full/path/to/file
@@ -226,8 +237,9 @@ To see matching hosts for a given group, use:
 cftail <group> list
 
 ```
-## cftail-request
+##cftail-request
 ```
+/home/jcutter/git/cf_shortcuts/cfssh/cftail-request: illegal option -- h
 
 DESCRIPTION: multitail and grep request_id and all its associated tasks
 
@@ -236,6 +248,7 @@ USAGE: cftail-request [-l] group request_id [log_file]
 DETAILS:
 
   commas in request_id will automatically be stripped
+
   log_file is optional and defaults to automation.log
     For CloudForms logs, log_file can be in the format of evm or evm.log
     For any other files, use /the/full/path/to/file

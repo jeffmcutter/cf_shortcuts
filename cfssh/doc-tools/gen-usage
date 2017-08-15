@@ -6,6 +6,6 @@ for i in $commands
 do
   echo "##$i"
   echo '```'
-  $i -h
+  ~/git/cf_shortcuts/cfssh/$i -h
   echo '```'
 done

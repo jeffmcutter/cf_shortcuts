@@ -138,7 +138,7 @@ L='L'
 
 SAVEOUT=false
 
-while getopts ac:g:ilo: OPT
+while getopts ac:g:hilo: OPT
 do
   case $OPT in
     a) GREP_ARCHIVED=true ;;

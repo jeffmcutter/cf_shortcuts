@@ -124,7 +124,7 @@ function usage {
   echo
   echo "To see matching hosts for a given group, use:"
   echo
-  echo "$NAME <group> list"
+  echo "$NAME -g <group> list"
   echo
   exit 1
 }

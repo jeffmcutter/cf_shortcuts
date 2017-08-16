@@ -53,7 +53,7 @@ AVAILABLE GROUPS (default is all):
 
 To see matching hosts for a given group, use:
 
-cfssh <group> list
+cfssh -g <group> list
 
 ```
 ##cfscp
@@ -77,7 +77,7 @@ AVAILABLE GROUPS (default is all):
 
 To see matching hosts for a given group, use:
 
-cfscp <group> list
+cfscp -g <group> list
 
 ```
 ##cfcollect
@@ -103,7 +103,7 @@ AVAILABLE GROUPS (default is all):
 
 To see matching hosts for a given group, use:
 
-cfcollect <group> list
+cfcollect -g <group> list
 
 ```
 ##cfgrep
@@ -139,7 +139,7 @@ AVAILABLE GROUPS (default is all):
 
 To see matching hosts for a given group, use:
 
-cfgrep <group> list
+cfgrep -g <group> list
 
 ```
 ##cfgrep-collate
@@ -174,7 +174,7 @@ AVAILABLE GROUPS (default is all):
 
 To see matching hosts for a given group, use:
 
-cfgrep-collate <group> list
+cfgrep-collate -g <group> list
 
 ```
 ##cfgrep-request
@@ -206,7 +206,7 @@ AVAILABLE GROUPS (default is all):
 
 To see matching hosts for a given group, use:
 
-cfgrep-request <group> list
+cfgrep-request -g <group> list
 
 ```
 ##cftail
@@ -243,7 +243,7 @@ AVAILABLE GROUPS (default is all):
 
 To see matching hosts for a given group, use:
 
-cftail <group> list
+cftail -g <group> list
 
 ```
 ##cftail-request
@@ -277,7 +277,7 @@ AVAILABLE GROUPS (default is all):
 
 To see matching hosts for a given group, use:
 
-cftail-request <group> list
+cftail-request -g <group> list
 
 ```
 

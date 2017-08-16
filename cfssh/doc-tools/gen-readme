@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cat ~/git/cf_shortcuts/cfssh/doc-tools/HEAD.md > ~/git/cf_shortcuts/cfssh/README.md
+
 commands="cfssh cfscp cfcollect cfgrep cfgrep-collate cfgrep-request cftail cftail-request"
 
 for i in $commands
@@ -8,4 +10,6 @@ do
   echo '```'
   ~/git/cf_shortcuts/cfssh/$i -h
   echo '```'
-done
+done >> ~/git/cf_shortcuts/cfssh/README.md
+
+cat ~/git/cf_shortcuts/cfssh/doc-tools/FOOT.md >> ~/git/cf_shortcuts/cfssh/README.md

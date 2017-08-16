@@ -22,7 +22,13 @@ cftail-request (Look up tasks associated with request_id and use multitail to ta
 
 **Note that this program can enable you to do things faster, including mistakes, use at your own risk.**
 
-Files can be placed into /root/bin or another location.  It's best to add the location to your PATH.
+Recommended installation as root on the VMDB appliance:
+```
+cd
+git clone https://github.com/jeffmcutter/cf_shortcuts.git
+ln -s cf_shortcuts/cfssh
+```
+Add $HOME/cfssh to your PATH in .bash_profile.
 
 Update cfhosts file with appropriate hostnames or IP addresses and group assignments.
 

@@ -124,7 +124,8 @@ function usage {
   echo
   echo "To see matching hosts for a given group, use:"
   echo
-  echo "$NAME -g <group> list"
+  echo "$NAME [-q] -g <group> list"
+  echo "  -q to suppress header"
   echo
   exit 1
 }
@@ -138,7 +139,7 @@ L='L'
 
 SAVEOUT=false
 
-while getopts ac:g:hilo: OPT
+while getopts ac:g:hilqo: OPT
 do
   case $OPT in
     a) GREP_ARCHIVED=true ;;
@@ -146,6 +147,7 @@ do
     g) group=$OPTARG ;;
     i) GREP="$GREP -i" ;;
     l) L='l' ;;
+    q) QUIET=true ;;
     o) SAVEOUT=true
        TMPFILE=$OPTARG
       ;;
@@ -301,13 +303,19 @@ then
   usage
 fi
 
-echo
+if [ "$QUIET" != 'true' ]
+then
+  echo
+fi
 
 SERVERS=$($cfhosts_cmd $cfhosts_file list_servers $group)
 
 if [ "$1" == "list" ]
 then
-  echo "Matching servers:"
+  if [ "$QUIET" != 'true' ]
+  then
+    echo "Matching servers:"
+  fi
   for i in $SERVERS
   do
     echo $i

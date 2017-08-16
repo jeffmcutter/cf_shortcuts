@@ -45,7 +45,7 @@ function usage_log_file {
 
 function usage_pattern {
   echo "  pattern may be specified as a regex suitable for egrep taking care to prevent the shell from interpretation"
-  if [[ "$NAME" != 'cfgrep-request' || "$NAME" != 'cftail-request' ]]
+  if [[ $NAME != 'cfgrep-request' || $NAME != 'cftail-request' ]]
   then
     echo "  pattern may be specified as 'nogrep' to have no grep or use cat instead of grep"
   fi
@@ -63,7 +63,7 @@ function usage_tail {
 }
 
 function usage_output {
-  if [[ "$NAME" == 'cfgrep-collate' || "$NAME" == 'cfgrep-request' ]]
+  if [[ $NAME == 'cfgrep-collate' || $NAME == 'cfgrep-request' ]]
   then
     echo " -o outputfile can be used to save output to outputfile"
   fi
@@ -92,16 +92,16 @@ function usage_request {
 function usage {
   echo
   case $NAME in
-    "cfssh") usage_common "group command args" "ssh and run command with args" ;;
-    "cfscp") usage_common "group local_file remote_dest_dir" "push files out using scp" "  Only one file is supported at a time" ;;
-    "cfcollect") usage_common "group remote_file local_dest_dir" "pull files in using scp" "  Wildcards are accepted for remote_file but should only match one file" "  local_files are appended with remote hostname" ;;
-    "cfgrep") usage_grep "[-i] group pattern [log_file] [count]" "grep log_file for pattern and show last count number of lines" "  count is optional and used with tail to limit the output, default is $TAIL_NUMBER" "  If count is to be specified, log_file must also be specified" "  To show all lines specify count as 'all'";;
-    "cfgrep-collate") usage_grep "[-i] [-o outputfile] group pattern [log_file]" "grep log_file for pattern and collate all results and display using less" ;;
-    "cfgrep-request") usage_request "[-o outputfile] group request_id [log_file]" "grep log_file for request_id and all its associated tasks and collate all results and display with less" ;;
-    "cftail") usage_grep "[-i] [-l] group pattern [log_file]" "multitail and optionally grep pattern on specified group for specified log_file" "$(eval usage_tail)" ;;
-    "cftail-request") usage_request "[-l] group request_id [log_file]" "multitail and grep request_id and all its associated tasks" "$(eval usage_tail)" ;;
+    "cfssh") usage_common "[-g group] command args" "ssh and run command with args" ;;
+    "cfscp") usage_common "[-g group] local_file remote_dest_dir" "push files out using scp" "  Only one file is supported at a time" ;;
+    "cfcollect") usage_common "[-g group] remote_file local_dest_dir" "pull files in using scp" "  Wildcards are accepted for remote_file but should only match one file" "  local_files are appended with remote hostname" ;;
+    "cfgrep") usage_grep "[-i] [-g group] pattern [log_file] [count]" "grep log_file for pattern and show last count number of lines" "  count is optional and used with tail to limit the output, default is $TAIL_NUMBER" "  If count is to be specified, log_file must also be specified" "  To show all lines specify count as 'all'";;
+    "cfgrep-collate") usage_grep "[-i] [-o outputfile] [-g group] pattern [log_file]" "grep log_file for pattern and collate all results and display using less" ;;
+    "cfgrep-request") usage_request "[-o outputfile] [-g group] request_id [log_file]" "grep log_file for request_id and all its associated tasks and collate all results and display with less" ;;
+    "cftail") usage_grep "[-i] [-l] [-g group] pattern [log_file]" "multitail and optionally grep pattern" "$(eval usage_tail)" ;;
+    "cftail-request") usage_request "[-l] [-g group] request_id [log_file]" "multitail and grep request_id and all its associated tasks" "$(eval usage_tail)" ;;
   esac
-  echo "AVAILABLE GROUPS:"
+  echo "AVAILABLE GROUPS (default is all):"
   echo
   for i in $groups
   do
@@ -124,14 +124,14 @@ L='L'
 
 SAVEOUT=false
 
-while getopts ilo: OPT
+while getopts g:ilo: OPT
 do
   case $OPT in
-    l) L='l' ;;
+    g) group=$OPTARG ;;
     i) GREP="$GREP -i" ;;
-    o)
-      SAVEOUT=true
-      TMPFILE=$OPTARG
+    l) L='l' ;;
+    o) SAVEOUT=true
+       TMPFILE=$OPTARG
       ;;
     *) usage ;;
   esac
@@ -139,7 +139,33 @@ done
 
 shift $((OPTIND-1))
 
-if [[ "$NAME" != 'cfgrep-collate' && "$NAME" != 'cfgrep-request' && "$SAVEOUT" == 'true' ]]
+if [[ $NAME == 'cfgrep-collate' || $NAME == 'cfgrep-request' ]]
+then
+  if [ -z "$TMPFILE" ]
+  then
+    TMPFILE="/tmp/.$NAME.$$"
+  fi
+
+  if [ -e "$TMPFILE" ]
+  then
+    echo
+    read -p "TMPFILE $TMPFILE already exists!  Erase? (Y/N) " answer
+    answer=$(echo $answer | cut -c1 | tr [A-Z] [a-z])
+    if [ "$answer" == 'y' ]
+    then
+      > $TMPFILE
+      if [ $? -ne 0 ]
+      then
+        echo "Unable to erase $TMPFILE!"
+        exit 1
+      fi
+    else
+      exit 1
+    fi
+  fi
+fi
+
+if [[ $NAME != 'cfgrep-collate' && $NAME != 'cfgrep-request' && "$SAVEOUT" == 'true' ]]
 then
   echo
   echo "$NAME does not support -o option."
@@ -151,32 +177,37 @@ then
   trap clean_tmp_file EXIT
 fi
 
-if [[ "$NAME" == "cfssh" || "$2" == "list" ]]
+if [ $NAME == 'cfssh' ]
 then
-  if [ $# -lt 2 ]
+  if [ $# -lt 1 ]
   then
     echo
     echo "Not enough arguments!"
     usage
   fi
-elif [ "$NAME" == "cfgrep" ]
+elif [[ "$2" == "list" && $# -lt 2 ]]
 then
-  if [[ $# -lt 2 || $# -gt 4 ]]
+  echo
+  echo "Not enough arguments!"
+  usage
+elif [ $NAME == "cfgrep" ]
+then
+  if [[ $# -lt 1 || $# -gt 3 ]]
   then
     echo
     echo "Wrong number of arguments!"
     usage
   fi
-elif [[ "$NAME" == 'cfgrep-collate' || "$NAME" == "cfgrep-request" || "$NAME" == "cftail" || "$NAME" == "cftail-request" ]]
+elif [[ $NAME == 'cfgrep-collate' || $NAME == "cfgrep-request" || $NAME == "cftail" || $NAME == "cftail-request" ]]
 then
-  if [[ $# -ne 2 && $# -ne 3 ]]
+  if [[ $# -ne 1 && $# -ne 2 ]]
   then
     echo
     echo "Wrong number of arguments!"
     usage
   fi
 else
-  if [ $# -ne 3 ]
+  if [ $# -ne 2 ]
   then
     echo
     echo "Wrong number of arguments!"
@@ -184,8 +215,10 @@ else
   fi
 fi
 
-group=$1
-shift
+if [ -z "$group" ]
+then
+  group=all
+fi
 
 if [ ! -r "$cfhosts_file" ]
 then
@@ -201,7 +234,7 @@ then
   usage
 fi
 
-if [[ "$NAME" == 'cfgrep-request' || "$NAME" == 'cftail-request' ]]
+if [[ $NAME == 'cfgrep-request' || $NAME == 'cftail-request' ]]
 then
   if [ ! -d '/var/www/miq/vmdb' ]
   then
@@ -212,7 +245,7 @@ then
   fi
 fi
 
-if [[ "$NAME" == 'cftail' || "$NAME" == 'cftail-request' ]]
+if [[ $NAME == 'cftail' || $NAME == 'cftail-request' ]]
 then
   which multitail > /dev/null 2>&1
   if [ $? -ne 0 ]
@@ -264,18 +297,18 @@ then
   exit
 fi
 
-if [[ "$NAME" == 'cfgrep' || "$NAME" == 'cfgrep-collate' || "$NAME" == 'cfgrep-request' || "$NAME" == 'cftail' || $NAME == 'cftail-request' ]]
+if [[ $NAME == 'cfgrep' || $NAME == 'cfgrep-collate' || $NAME == 'cfgrep-request' || $NAME == 'cftail' || $NAME == 'cftail-request' ]]
 then
   PATTERN="$1"
   if [ "$PATTERN" == 'nogrep' ]
   then
-    if [[ "$NAME" == 'cfgrep' || "$NAME" == 'cfgrep-collate' ]]
+    if [[ $NAME == 'cfgrep' || $NAME == 'cfgrep-collate' ]]
     then
       GREP='cat'
     PATTERN=''
     fi
   fi
-  if [[ "$NAME" == 'cfgrep-request' || $NAME == 'cftail-request' ]]
+  if [[ $NAME == 'cfgrep-request' || $NAME == 'cftail-request' ]]
   then
     REQUEST_ID=$(echo $PATTERN | sed 's/,//g')
     echo "*** looking for tasks associated with request_id: $REQUEST_ID ***"
@@ -287,7 +320,7 @@ then
     PATTERN="$REQUEST_ID|$(echo $TASK_IDS | sed 's/ /|/g')"
     echo "*** looking for request_id: $REQUEST_ID and task_ids: $TASK_IDS ***"
     echo
-    if [ "$NAME" == 'cftail-request' ]
+    if [ $NAME == 'cftail-request' ]
     then
       sleep 1
     fi
@@ -302,7 +335,7 @@ then
   then
     LOG="/var/www/miq/vmdb/log/$(echo $LOG | sed 's/\.log$//').log"
   fi
-  if [[ "$NAME" == 'cfgrep' ]]
+  if [[ $NAME == 'cfgrep' ]]
   then
     if [ -n "$3" ]
     then
@@ -322,17 +355,7 @@ fi
 ARGS=$*
 ARGS=$(echo $ARGS | sed 's/*/\\*/g')
 
-if [ -z "$TMPFILE" ]
-then
-  TMPFILE="/tmp/.$NAME.$$"
-  if [ -e "$TMPFILE" ]
-  then
-    echo "TMPFILE $TMPFILE already exists!"
-    exit 1
-  fi
-fi
-
-if [[ "$NAME" != 'cftail' && "$NAME" != 'cftail-request' ]]
+if [[ $NAME != 'cftail' && $NAME != 'cftail-request' ]]
 then
   
   for i in $SERVERS
@@ -348,7 +371,7 @@ then
     echo
   done
 
-  if [[ "$NAME" == 'cfgrep-collate' || "$NAME" == 'cfgrep-request' ]]
+  if [[ $NAME == 'cfgrep-collate' || $NAME == 'cfgrep-request' ]]
   then
     echo "*** collating results ***"
     sort -k 4 $TMPFILE > $TMPFILE.sort
@@ -360,7 +383,7 @@ then
 else
 
   COMMAND='multitail'
-  if [ "$NAME" == 'cftail-request' ]
+  if [ $NAME == 'cftail-request' ]
   then
     TAIL='tail -n $ALL_TAIL_NUMBER -f'
   else

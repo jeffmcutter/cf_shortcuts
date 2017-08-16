@@ -59,7 +59,8 @@ AVAILABLE GROUPS (default is all):
 
 To see matching hosts for a given group, use:
 
-cfssh -g <group> list
+cfssh [-q] -g <group> list
+  -q to suppress header
 
 ```
 ##cfscp
@@ -83,7 +84,8 @@ AVAILABLE GROUPS (default is all):
 
 To see matching hosts for a given group, use:
 
-cfscp -g <group> list
+cfscp [-q] -g <group> list
+  -q to suppress header
 
 ```
 ##cfcollect
@@ -109,7 +111,8 @@ AVAILABLE GROUPS (default is all):
 
 To see matching hosts for a given group, use:
 
-cfcollect -g <group> list
+cfcollect [-q] -g <group> list
+  -q to suppress header
 
 ```
 ##cfgrep
@@ -145,7 +148,8 @@ AVAILABLE GROUPS (default is all):
 
 To see matching hosts for a given group, use:
 
-cfgrep -g <group> list
+cfgrep [-q] -g <group> list
+  -q to suppress header
 
 ```
 ##cfgrep-collate
@@ -180,7 +184,8 @@ AVAILABLE GROUPS (default is all):
 
 To see matching hosts for a given group, use:
 
-cfgrep-collate -g <group> list
+cfgrep-collate [-q] -g <group> list
+  -q to suppress header
 
 ```
 ##cfgrep-request
@@ -212,7 +217,8 @@ AVAILABLE GROUPS (default is all):
 
 To see matching hosts for a given group, use:
 
-cfgrep-request -g <group> list
+cfgrep-request [-q] -g <group> list
+  -q to suppress header
 
 ```
 ##cftail
@@ -249,7 +255,8 @@ AVAILABLE GROUPS (default is all):
 
 To see matching hosts for a given group, use:
 
-cftail -g <group> list
+cftail [-q] -g <group> list
+  -q to suppress header
 
 ```
 ##cftail-request
@@ -283,7 +290,8 @@ AVAILABLE GROUPS (default is all):
 
 To see matching hosts for a given group, use:
 
-cftail-request -g <group> list
+cftail-request [-q] -g <group> list
+  -q to suppress header
 
 ```
 

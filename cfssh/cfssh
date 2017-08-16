@@ -385,8 +385,8 @@ then
       "cfssh") ssh root@$i $ARGS ;;
       "cfscp") scp $1 root@$i:$2 ;;
       "cfcollect") scp root@$i:$1 $2/$(basename $1)-$i ;;
-      "cfgrep") ssh root@$i $GREP "$PATTERN" "$LOG" \| $TAIL ;;
-      "cfgrep-collate"|"cfgrep-request") ssh root@$i $GREP "$PATTERN" "$LOG" | perl -pe 's/^\/.*?://' | sed -e "s/^/[$i] /" >> $TMPFILE ;;
+      "cfgrep") ssh root@$i "$GREP \"$PATTERN\" $LOG | $TAIL" | perl -pe 's/^\/.*?://' ;;
+      "cfgrep-collate"|"cfgrep-request") ssh root@$i "$GREP \"$PATTERN\" $LOG" | perl -pe 's/^\/.*?://' | sed -e "s/^/[$i] /" >> $TMPFILE ;;
     esac
     echo
   done

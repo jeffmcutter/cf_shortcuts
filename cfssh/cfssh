@@ -341,7 +341,7 @@ then
   usage
 fi
 
-if [[ "$QUIET" != 'true' && "$USE_PSSH" != 'true' && ( $NAME != 'cfgrep-collate' || $NAME != 'cfgrep-request' ) ]]
+if [[ "$QUIET" != 'true' && "$USE_PSSH" != 'true' && ( $NAME == 'cfgrep-collate' || $NAME == 'cfgrep-request' ) ]]
 then
   echo
 fi

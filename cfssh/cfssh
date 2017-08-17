@@ -12,6 +12,7 @@ NAME=$(basename $0)
 DIR=$(dirname $0)
 cfhosts_cmd="$DIR/cfhosts.rb"
 cfhosts_file="$DIR/cfhosts"
+USER="root"
 
 groups=$($cfhosts_cmd $cfhosts_file list_groups)
 
@@ -130,8 +131,13 @@ function usage {
   exit 1
 }
 
-function clean_tmp_file {
+function clean_tmp_files {
   rm -f $TMPFILE
+  clean_pssh_out
+}
+
+function clean_pssh_out {
+  rm -rf $PSSH_OUTDIR
 }
 
 GREP="zgrep -e"
@@ -156,6 +162,36 @@ do
 done
 
 shift $((OPTIND-1))
+
+which pssh > /dev/null 2>&1
+if [ $? -eq 0 ]
+then
+  USE_PSSH=true
+else
+  USE_PSSH=false
+fi
+
+if [ "$USE_PSSH" == 'true' ]
+then
+  PSSH_OUTDIR="/tmp/.$NAME.pssh.$$"
+  if [ -e "$PSSH_OUTDIR" ]
+  then
+    echo
+    read -p "PSSH_OUTDIR $PSSH_OUTDIR already exists!  Remove? (Y/N) " answer
+    answer=$(echo $answer | cut -c1 | tr [A-Z] [a-z])
+    if [ "$answer" == 'y' ]
+    then
+      rm -rf $PSSH_OUTDIR
+      if [ $? -ne 0 ]
+      then
+        echo "Unable to remove $PSSH_OUTDIR!"
+        exit 1
+      fi
+    else
+      exit 1
+    fi
+  fi
+fi
 
 if [[ $NAME == 'cfgrep-collate' || $NAME == 'cfgrep-request' ]]
 then
@@ -192,7 +228,9 @@ fi
 
 if [ "$SAVEOUT" == 'false' ]
 then
-  trap clean_tmp_file EXIT
+  trap clean_tmp_files EXIT
+else
+  trap clean_pssh_out EXIT
 fi
 
 if [ $NAME == 'cfssh' ]
@@ -303,7 +341,7 @@ then
   usage
 fi
 
-if [ "$QUIET" != 'true' ]
+if [[ "$QUIET" != 'true' && "$USE_PSSH" != 'true' ]]
 then
   echo
 fi
@@ -385,23 +423,47 @@ ARGS=$(echo $ARGS | sed 's/*/\\*/g')
 
 if [[ $NAME != 'cftail' && $NAME != 'cftail-request' ]]
 then
+
+  if [ "$USE_PSSH" != 'true' ]
+  then
   
-  for i in $SERVERS
-  do
-    echo "*** $i ***"
+    for i in $SERVERS
+    do
+      echo "*** $i ***"
+      case $NAME in
+        "cfssh") ssh $USER@$i $ARGS ;;
+        "cfscp") scp $1 $USER@$i:$2 ;;
+        "cfcollect") scp $USER@$i:$1 $2/$(basename $1)-$i ;;
+        "cfgrep") ssh $USER@$i "$GREP \"$PATTERN\" $LOG | $TAIL" | perl -pe 's/^\/.*?://' ;;
+        "cfgrep-collate"|"cfgrep-request") ssh $USER@$i "$GREP \"$PATTERN\" $LOG" | perl -pe 's/^\/.*?://' | sed -e "s/^/[$i] /" >> $TMPFILE ;;
+      esac
+      echo
+    done
+
+  else
+
+    HOSTS=""
+    for i in $SERVERS
+    do
+      HOSTS="$HOSTS -H $USER@$i"
+    done
+
     case $NAME in
-      "cfssh") ssh root@$i $ARGS ;;
-      "cfscp") scp $1 root@$i:$2 ;;
-      "cfcollect") scp root@$i:$1 $2/$(basename $1)-$i ;;
-      "cfgrep") ssh root@$i "$GREP \"$PATTERN\" $LOG | $TAIL" | perl -pe 's/^\/.*?://' ;;
-      "cfgrep-collate"|"cfgrep-request") ssh root@$i "$GREP \"$PATTERN\" $LOG" | perl -pe 's/^\/.*?://' | sed -e "s/^/[$i] /" >> $TMPFILE ;;
+        "cfssh") pssh -i $HOSTS $ARGS ;;
+        "cfscp") pscp.pssh $HOSTS $1 $2 ;;
+        "cfcollect") pslurp $HOSTS -L $2 $1 $2 ;;
+        "cfgrep") pssh -i $HOSTS -o $PSSH_OUTDIR "$GREP \"$PATTERN\" $LOG | $TAIL | perl -pe 's/^\/.*?://'" ;;
+        "cfgrep-collate"|"cfgrep-request") pssh $HOSTS -o $PSSH_OUTDIR "$GREP \"$PATTERN\" $LOG | perl -pe 's/^\/.*?://' | sed -e \"s/^/[$i] /\"" ;;
     esac
-    echo
-  done
+  fi
 
   if [[ $NAME == 'cfgrep-collate' || $NAME == 'cfgrep-request' ]]
   then
     echo "*** collating results ***"
+    if [ "$USE_PSSH" == 'true' ]
+    then
+      cat $PSSH_OUTDIR/* > $TMPFILE
+    fi
     sort -k 4 $TMPFILE > $TMPFILE.sort
     mv $TMPFILE.sort $TMPFILE
     less $TMPFILE

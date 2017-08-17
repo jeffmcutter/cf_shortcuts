@@ -4,6 +4,8 @@ This is a simple tool to allow for running commands via SSH and copying files wi
 
 Also, even if you do have pssh or other tools for running commands on multiple systems, the new cfgrep, cfgrep-collate, cfgrep-request, cftail, and cftail-request are probably worth a look.
 
+All these tools now make use of pssh (Parallel SSH) if installed to speed up execution by running ssh, scp, etc. sessions in parallel.
+
 cfssh (SSH to each host in group)
 
 cfscp (SCP file TO each host in group)
@@ -36,7 +38,7 @@ SSH keys preferred.
 
 *cftail\* commands require multitail be installed and in the PATH.*
 
-You can get multitail from EPEL (https://fedoraproject.org/wiki/EPEL).
+You can get multitail and pssh from EPEL (https://fedoraproject.org/wiki/EPEL).
 
 **-request commands can only be run from a ManageIQ/CloudForms appliance in the region in question.*
 

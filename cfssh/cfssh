@@ -341,7 +341,7 @@ then
   usage
 fi
 
-if [[ "$QUIET" != 'true' && "$USE_PSSH" != 'true' ]]
+if [[ "$QUIET" != 'true' && "$USE_PSSH" != 'true' && ( $NAME != 'cfgrep-collate' || $NAME != 'cfgrep-request' ) ]]
 then
   echo
 fi
@@ -453,7 +453,7 @@ then
         "cfscp") pscp.pssh $HOSTS $1 $2 ;;
         "cfcollect") pslurp $HOSTS -L $2 $1 $2 ;;
         "cfgrep") pssh -i $HOSTS -o $PSSH_OUTDIR "$GREP \"$PATTERN\" $LOG | $TAIL | perl -pe 's/^\/.*?://'" ;;
-        "cfgrep-collate"|"cfgrep-request") pssh $HOSTS -o $PSSH_OUTDIR "$GREP \"$PATTERN\" $LOG | perl -pe 's/^\/.*?://' | sed -e \"s/^/[$i] /\"" ;;
+        "cfgrep-collate"|"cfgrep-request") pssh $HOSTS -o $PSSH_OUTDIR "$GREP \"$PATTERN\" $LOG | perl -pe 's/^\/.*?://' | sed -e \"s/^/[$(hostname -s)] /\"" ;;
     esac
   fi
 

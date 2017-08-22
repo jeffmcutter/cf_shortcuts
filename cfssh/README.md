@@ -49,7 +49,7 @@ You can get multitail and pssh from EPEL (https://fedoraproject.org/wiki/EPEL).
 
 DESCRIPTION: ssh and run command with args
 
-USAGE: cfssh [-s] [-g group] command args
+USAGE: cfssh [-g group] [-s] command args
 
 DETAILS:
 
@@ -76,7 +76,7 @@ cfssh [-q] -g <group> list
 
 DESCRIPTION: push files out using scp
 
-USAGE: cfscp [-s] [-g group] local_file remote_dest_dir
+USAGE: cfscp [-g group] [-s] local_file remote_dest_dir
 
 DETAILS:
  
@@ -105,7 +105,7 @@ cfscp [-q] -g <group> list
 
 DESCRIPTION: pull files in using scp
 
-USAGE: cfcollect [-s] [-g group] remote_file local_dest_dir
+USAGE: cfcollect [-g group] [-s] remote_file local_dest_dir
 
 DETAILS:
  
@@ -136,7 +136,7 @@ cfcollect [-q] -g <group> list
 
 DESCRIPTION: grep log_file for pattern and show last count number of lines
 
-USAGE: cfgrep [-s] [-a] [-c count] [-i] [-g group] pattern [log_file]
+USAGE: cfgrep [-g group] [-s] [-a] [-c count] [-i] pattern [log_file]
 
 DETAILS:
 
@@ -177,7 +177,7 @@ cfgrep [-q] -g <group> list
 
 DESCRIPTION: grep log_file for pattern and collate all results and display using less
 
-USAGE: cfgrep-collate [-s] [-a] [-i] [-o outputfile] [-g group] pattern [log_file]
+USAGE: cfgrep-collate [-g group] [-s] [-a] [-i] [-o outputfile] pattern [log_file]
 
 DETAILS:
 
@@ -217,7 +217,7 @@ cfgrep-collate [-q] -g <group> list
 
 DESCRIPTION: grep log_file for request_id and all its associated tasks and collate all results and display with less
 
-USAGE: cfgrep-request [-s] [-a] [-o outputfile] [-g group] request_id [log_file]
+USAGE: cfgrep-request [-g group] [-s] [-a] [-o outputfile] request_id [log_file]
 
 DETAILS:
 
@@ -254,7 +254,7 @@ cfgrep-request [-q] -g <group> list
 
 DESCRIPTION: multitail and optionally grep pattern
 
-USAGE: cftail [-s] [-i] [-l] [-g group] pattern [log_file]
+USAGE: cftail [-g group] [-s] [-i] [-l] pattern [log_file]
 
 DETAILS:
 
@@ -296,7 +296,7 @@ cftail [-q] -g <group> list
 
 DESCRIPTION: multitail and grep request_id and all its associated tasks
 
-USAGE: cftail-request [-s] [-l] [-g group] request_id [log_file]
+USAGE: cftail-request [-g group] [-s] [-l] request_id [log_file]
 
 DETAILS:
 

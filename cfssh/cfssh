@@ -19,7 +19,7 @@ groups=$($cfhosts_cmd $cfhosts_file list_groups)
 function usage_common {
   echo "DESCRIPTION: $2"
   echo
-  echo "USAGE: $NAME [-s] $1"
+  echo "USAGE: $NAME [-g group] [-s] $1"
   echo
   shift 2
   echo "DETAILS:"
@@ -111,14 +111,14 @@ function usage_request {
 function usage {
   echo
   case $NAME in
-    "cfssh") usage_common "[-g group] command args" "ssh and run command with args" ;;
-    "cfscp") usage_common "[-g group] local_file remote_dest_dir" "push files out using scp" " " "  Only one file is supported at a time" ;;
-    "cfcollect") usage_common "[-g group] remote_file local_dest_dir" "pull files in using scp" " " "  Wildcards are accepted for remote_file but should only match one file" " " "  local_files are appended with remote hostname" ;;
-    "cfgrep") usage_regex "[-a] [-c count] [-i] [-g group] pattern [log_file]" "grep log_file for pattern and show last count number of lines" " " "  -c count is optional and used with tail to limit the output, default is $TAIL_NUMBER" "  To show all lines specify -c all" "$(eval usage_grep)" ;;
-    "cfgrep-collate") usage_regex "[-a] [-i] [-o outputfile] [-g group] pattern [log_file]" "grep log_file for pattern and collate all results and display using less" "$(eval usage_grep)" ;;
-    "cfgrep-request") usage_request "[-a] [-o outputfile] [-g group] request_id [log_file]" "grep log_file for request_id and all its associated tasks and collate all results and display with less" "$(eval usage_grep)" ;;
-    "cftail") usage_regex "[-i] [-l] [-g group] pattern [log_file]" "multitail and optionally grep pattern" "$(eval usage_tail)" ;;
-    "cftail-request") usage_request "[-l] [-g group] request_id [log_file]" "multitail and grep request_id and all its associated tasks" "$(eval usage_tail)" ;;
+    "cfssh") usage_common "command args" "ssh and run command with args" ;;
+    "cfscp") usage_common "local_file remote_dest_dir" "push files out using scp" " " "  Only one file is supported at a time" ;;
+    "cfcollect") usage_common "remote_file local_dest_dir" "pull files in using scp" " " "  Wildcards are accepted for remote_file but should only match one file" " " "  local_files are appended with remote hostname" ;;
+    "cfgrep") usage_regex "[-a] [-c count] [-i] pattern [log_file]" "grep log_file for pattern and show last count number of lines" " " "  -c count is optional and used with tail to limit the output, default is $TAIL_NUMBER" "  To show all lines specify -c all" "$(eval usage_grep)" ;;
+    "cfgrep-collate") usage_regex "[-a] [-i] [-o outputfile] pattern [log_file]" "grep log_file for pattern and collate all results and display using less" "$(eval usage_grep)" ;;
+    "cfgrep-request") usage_request "[-a] [-o outputfile] request_id [log_file]" "grep log_file for request_id and all its associated tasks and collate all results and display with less" "$(eval usage_grep)" ;;
+    "cftail") usage_regex "[-i] [-l] pattern [log_file]" "multitail and optionally grep pattern" "$(eval usage_tail)" ;;
+    "cftail-request") usage_request "[-l] request_id [log_file]" "multitail and grep request_id and all its associated tasks" "$(eval usage_tail)" ;;
   esac
   echo "AVAILABLE GROUPS (default is all):"
   echo

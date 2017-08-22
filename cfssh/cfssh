@@ -19,7 +19,7 @@ groups=$($cfhosts_cmd $cfhosts_file list_groups)
 function usage_common {
   echo "DESCRIPTION: $2"
   echo
-  echo "USAGE: $NAME $1"
+  echo "USAGE: $NAME [-s] $1"
   echo
   shift 2
   if [ $# -ne 0 ]
@@ -34,6 +34,8 @@ function usage_common {
     done
     echo
   fi
+  echo "  -s to run serially"
+  echo
 }
 
 function usage_case {
@@ -137,15 +139,19 @@ function clean_tmp_files {
 }
 
 function clean_pssh_out {
-  rm -rf $PSSH_OUTDIR
+  if [ "$USE_PSSH" == 'true' ]
+  then
+    rm -rf $PSSH_OUTDIR
+  fi
 }
 
 GREP="zgrep -e"
 L='L'
 
 SAVEOUT=false
+SERIAL=false
 
-while getopts ac:g:hilqo: OPT
+while getopts ac:g:hilqo:s OPT
 do
   case $OPT in
     a) GREP_ARCHIVED=true ;;
@@ -157,18 +163,23 @@ do
     o) SAVEOUT=true
        TMPFILE=$OPTARG
       ;;
+    s) SERIAL=true ;;
     *) usage ;;
   esac
 done
 
 shift $((OPTIND-1))
 
-which pssh > /dev/null 2>&1
-if [ $? -eq 0 ]
+
+if [ "$SERIAL" != 'true' ]
 then
-  USE_PSSH=true
-else
-  USE_PSSH=false
+  which pssh > /dev/null 2>&1
+  if [ $? -eq 0 ]
+  then
+    USE_PSSH=true
+  else
+    USE_PSSH=false
+  fi
 fi
 
 if [ "$USE_PSSH" == 'true' ]

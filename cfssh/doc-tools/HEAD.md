@@ -6,7 +6,7 @@ Also, even if you do have pssh or other tools for running commands on multiple s
 
 All these tools now make use of pssh (Parallel SSH) if installed to speed up execution by running ssh, scp, etc. sessions in parallel.
 
-cfssh (SSH to each host in group)
+cfssh (SSH to each host in group and run provided commands)
 
 cfscp (SCP file TO each host in group)
 

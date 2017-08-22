@@ -6,7 +6,7 @@ Also, even if you do have pssh or other tools for running commands on multiple s
 
 All these tools now make use of pssh (Parallel SSH) if installed to speed up execution by running ssh, scp, etc. sessions in parallel.
 
-cfssh (SSH to each host in group)
+cfssh (SSH to each host in group and run provided commands)
 
 cfscp (SCP file TO each host in group)
 
@@ -49,7 +49,9 @@ You can get multitail and pssh from EPEL (https://fedoraproject.org/wiki/EPEL).
 
 DESCRIPTION: ssh and run command with args
 
-USAGE: cfssh [-g group] command args
+USAGE: cfssh [-s] [-g group] command args
+
+  -s to run serially
 
 AVAILABLE GROUPS (default is all):
 
@@ -72,11 +74,13 @@ cfssh [-q] -g <group> list
 
 DESCRIPTION: push files out using scp
 
-USAGE: cfscp [-g group] local_file remote_dest_dir
+USAGE: cfscp [-s] [-g group] local_file remote_dest_dir
 
 DETAILS:
  
   Only one file is supported at a time
+
+  -s to run serially
 
 AVAILABLE GROUPS (default is all):
 
@@ -99,13 +103,15 @@ cfscp [-q] -g <group> list
 
 DESCRIPTION: pull files in using scp
 
-USAGE: cfcollect [-g group] remote_file local_dest_dir
+USAGE: cfcollect [-s] [-g group] remote_file local_dest_dir
 
 DETAILS:
  
   Wildcards are accepted for remote_file but should only match one file
  
   local_files are appended with remote hostname
+
+  -s to run serially
 
 AVAILABLE GROUPS (default is all):
 
@@ -128,7 +134,7 @@ cfcollect [-q] -g <group> list
 
 DESCRIPTION: grep log_file for pattern and show last count number of lines
 
-USAGE: cfgrep [-a] [-c count] [-i] [-g group] pattern [log_file]
+USAGE: cfgrep [-s] [-a] [-c count] [-i] [-g group] pattern [log_file]
 
 DETAILS:
 
@@ -145,6 +151,8 @@ DETAILS:
   To show all lines specify -c all
 
   -a can be used to also grep archived logs
+
+  -s to run serially
 
 AVAILABLE GROUPS (default is all):
 
@@ -167,7 +175,7 @@ cfgrep [-q] -g <group> list
 
 DESCRIPTION: grep log_file for pattern and collate all results and display using less
 
-USAGE: cfgrep-collate [-a] [-i] [-o outputfile] [-g group] pattern [log_file]
+USAGE: cfgrep-collate [-s] [-a] [-i] [-o outputfile] [-g group] pattern [log_file]
 
 DETAILS:
 
@@ -183,6 +191,8 @@ DETAILS:
     For any other files, use /the/full/path/to/file
 
   -a can be used to also grep archived logs
+
+  -s to run serially
 
 AVAILABLE GROUPS (default is all):
 
@@ -205,7 +215,7 @@ cfgrep-collate [-q] -g <group> list
 
 DESCRIPTION: grep log_file for request_id and all its associated tasks and collate all results and display with less
 
-USAGE: cfgrep-request [-a] [-o outputfile] [-g group] request_id [log_file]
+USAGE: cfgrep-request [-s] [-a] [-o outputfile] [-g group] request_id [log_file]
 
 DETAILS:
 
@@ -218,6 +228,8 @@ DETAILS:
     For any other files, use /the/full/path/to/file
 
   -a can be used to also grep archived logs
+
+  -s to run serially
 
 AVAILABLE GROUPS (default is all):
 
@@ -240,7 +252,7 @@ cfgrep-request [-q] -g <group> list
 
 DESCRIPTION: multitail and optionally grep pattern
 
-USAGE: cftail [-i] [-l] [-g group] pattern [log_file]
+USAGE: cftail [-s] [-i] [-l] [-g group] pattern [log_file]
 
 DETAILS:
 
@@ -258,6 +270,8 @@ DETAILS:
   In multitail:
     Move around the buffer similar to less by pressing 'b'
     Exit whatever context you are in by pressing 'q'
+
+  -s to run serially
 
 AVAILABLE GROUPS (default is all):
 
@@ -280,7 +294,7 @@ cftail [-q] -g <group> list
 
 DESCRIPTION: multitail and grep request_id and all its associated tasks
 
-USAGE: cftail-request [-l] [-g group] request_id [log_file]
+USAGE: cftail-request [-s] [-l] [-g group] request_id [log_file]
 
 DETAILS:
 
@@ -295,6 +309,8 @@ DETAILS:
   In multitail:
     Move around the buffer similar to less by pressing 'b'
     Exit whatever context you are in by pressing 'q'
+
+  -s to run serially
 
 AVAILABLE GROUPS (default is all):
 

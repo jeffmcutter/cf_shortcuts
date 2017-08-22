@@ -22,9 +22,9 @@ function usage_common {
   echo "USAGE: $NAME [-s] $1"
   echo
   shift 2
+  echo "DETAILS:"
   if [ $# -ne 0 ]
   then
-    echo "DETAILS:"
     for i in "$@"
     do
       if [ -n "$i" ]
@@ -32,6 +32,8 @@ function usage_common {
         echo "$i"
       fi
     done
+    echo
+  else
     echo
   fi
   echo "  -s to run serially"

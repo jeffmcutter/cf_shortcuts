@@ -51,6 +51,8 @@ DESCRIPTION: ssh and run command with args
 
 USAGE: cfssh [-s] [-g group] command args
 
+DETAILS:
+
   -s to run serially
 
 AVAILABLE GROUPS (default is all):

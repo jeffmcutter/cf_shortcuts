@@ -3,11 +3,10 @@
 for i in `cfssh -q -g all list`
 do
   echo -n "$i: "
-  curl -m 10 -k https://$i > /dev/null 2>&1
-  RC=$?
-  if [ $RC -ne 0 ]
+  RESULT=$(curl -m 10 -k https://$i/ping 2> /dev/null)
+  if [ "$RESULT" != 'pong'  ]
   then
-    echo "ERROR ($RC)"
+    echo "ERROR"
   else
     echo "OK"
   fi

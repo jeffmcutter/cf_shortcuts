@@ -464,7 +464,7 @@ then
     case $NAME in
         "cfssh") pssh -i $HOSTS $ARGS ;;
         "cfscp") pscp.pssh $HOSTS $1 $2 ;;
-        "cfcollect") pslurp $HOSTS -L $2 $1 $2 ;;
+        "cfcollect") pslurp $HOSTS -L $2 $1 . ;;
         "cfgrep") pssh -i $HOSTS -o $PSSH_OUTDIR "$GREP \"$PATTERN\" $LOG | $TAIL | perl -pe 's/^\/.*?://'" ;;
         "cfgrep-collate"|"cfgrep-request") pssh $HOSTS -o $PSSH_OUTDIR "$GREP \"$PATTERN\" $LOG | perl -pe 's/^\/.*?://' | sed -e \"s/^/[\$(hostname -s)] /\"" ;;
     esac

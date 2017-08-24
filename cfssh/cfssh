@@ -486,12 +486,7 @@ then
 else
 
   COMMAND='multitail'
-  if [ $NAME == 'cftail-request' ]
-  then
-    TAIL='tail -n $ALL_TAIL_NUMBER -f'
-  else
-    TAIL='tail -f'
-  fi
+  TAIL='tail -f'
   if [ "$PATTERN" == 'nogrep' ]
   then
     CLIENT_CMD="$TAIL $LOG"

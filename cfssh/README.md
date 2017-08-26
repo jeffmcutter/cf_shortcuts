@@ -53,7 +53,7 @@ You can get multitail and pssh from EPEL (https://fedoraproject.org/wiki/EPEL).
 
 
 # Usages:
-##cfssh
+## cfssh
 ```
 
 DESCRIPTION: ssh and run command with args
@@ -80,7 +80,7 @@ cfssh [-q] -g <group> list
   -q to suppress header
 
 ```
-##cfscp
+## cfscp
 ```
 
 DESCRIPTION: push files out using scp
@@ -109,7 +109,7 @@ cfscp [-q] -g <group> list
   -q to suppress header
 
 ```
-##cfcollect
+## cfcollect
 ```
 
 DESCRIPTION: pull files in using scp
@@ -140,7 +140,7 @@ cfcollect [-q] -g <group> list
   -q to suppress header
 
 ```
-##cfgrep
+## cfgrep
 ```
 
 DESCRIPTION: grep log_file for pattern and show last count number of lines
@@ -181,7 +181,7 @@ cfgrep [-q] -g <group> list
   -q to suppress header
 
 ```
-##cfgrep-collate
+## cfgrep-collate
 ```
 
 DESCRIPTION: grep log_file for pattern and collate all results and display using less
@@ -221,7 +221,7 @@ cfgrep-collate [-q] -g <group> list
   -q to suppress header
 
 ```
-##cfgrep-request
+## cfgrep-request
 ```
 
 DESCRIPTION: grep log_file for request_id and all its associated tasks and collate all results and display with less
@@ -258,7 +258,7 @@ cfgrep-request [-q] -g <group> list
   -q to suppress header
 
 ```
-##cftail
+## cftail
 ```
 
 DESCRIPTION: multitail and optionally grep pattern
@@ -300,7 +300,7 @@ cftail [-q] -g <group> list
   -q to suppress header
 
 ```
-##cftail-request
+## cftail-request
 ```
 
 DESCRIPTION: multitail and grep request_id and all its associated tasks

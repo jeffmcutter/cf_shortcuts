@@ -6,7 +6,7 @@ commands="cfssh cfscp cfcollect cfgrep cfgrep-collate cfgrep-request cftail cfta
 
 for i in $commands
 do
-  echo "##$i"
+  echo "## $i"
   echo '```'
   ~/git/cf_shortcuts/cfssh/$i -h
   echo '```'

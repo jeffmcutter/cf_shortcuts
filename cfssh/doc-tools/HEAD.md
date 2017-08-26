@@ -26,9 +26,13 @@ cftail-request (Look up tasks associated with request_id and use multitail to ta
 
 Recommended installation as root on the VMDB appliance:
 ```
-cd
+ssh root@cfme01
 git clone https://github.com/jeffmcutter/cf_shortcuts.git
 ln -s cf_shortcuts/cfssh
+mkdir bin
+ln -s cf_shortcuts/check_ui bin/
+echo 'export PATH=$PATH:$HOME/cfssh' >> .bash_profile
+
 ```
 Add $HOME/cfssh to your PATH in .bash_profile.
 

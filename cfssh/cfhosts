@@ -1,8 +1,8 @@
+# This file is a sample.  See cfhosts-gen script to generate this file by querying the VMDB.
+#
 # hostname_or_ip  <white space>	groups to assign host to separated by commas.
 #
 # Lines starting with a # are ignored.
-#
-# See cfhosts-gen script to generate this file by querying the VMDB.
 #
 cfmedb01.example.com		db
 cfmeui01.example.com		ui

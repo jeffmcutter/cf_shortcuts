@@ -1,10 +1,12 @@
 # cfssh cfscp cfcollect cfgrep and cftail utilities
 
-This is a simple tool to allow for running commands via SSH and copying files with SCP against multiple CloudForms appliances in an environment based on groups defined in hosts files.
+These tools allow for running commands and copying files and searching log files against multiple CloudForms appliances in an environment based on groups defined in hosts files.
 
 Also, even if you do have pssh or other tools for running commands on multiple systems, the new cfgrep, cfgrep-collate, cfgrep-request, cftail, and cftail-request are probably worth a look.
 
-All these tools now make use of pssh (Parallel SSH) if installed to speed up execution by running ssh, scp, etc. sessions in parallel.
+Different transport mechanisms are now supported and can be selected by updating the .config file.  By default, Ansible is used since it can work in parallel and is included by default on a CloudForms appliance.  Alternatively, if installed and selected, Parallel SSH can be used and is faster opening connections than Ansible.
+
+# Command Descriptions:
 
 cfssh (SSH to each host in group and run provided commands)
 
@@ -24,7 +26,8 @@ cftail-request (Look up tasks associated with request_id and use multitail to ta
 
 **Note that this program can enable you to do things faster, including mistakes, use at your own risk.**
 
-Recommended installation as root on the VMDB appliance:
+# Installation:
+Recommended installation as root on the VMDB appliance.
 ```
 ssh root@cfme01
 cd
@@ -40,11 +43,7 @@ ssh-keygen
 # Accept SSH host keys and copy out public key.
 cf-ssh-copy-id
 ```
-Add $HOME/cfssh to your PATH in .bash_profile.
-
-Update cfhosts file with appropriate hostnames or IP addresses and group assignments.
-
-SSH keys preferred.
+Update cfhosts file with appropriate group assignments as desired.
 
 *cftail\* commands require multitail be installed and in the PATH.*
 

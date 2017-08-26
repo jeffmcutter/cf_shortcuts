@@ -6,6 +6,8 @@ Also, even if you do have pssh or other tools for running commands on multiple s
 
 Different transport mechanisms are now supported and can be selected by updating the .config file.  By default, Ansible is used since it can work in parallel and is included by default on a CloudForms appliance.  Alternatively, if installed and selected, Parallel SSH can be used and is faster opening connections than Ansible.
 
+**Note that this program can enable you to do things faster, including mistakes, use at your own risk.**
+
 # Command Descriptions:
 
 cfssh (SSH to each host in group and run provided commands)
@@ -23,8 +25,6 @@ cfgrep-request (Look up tasks associated with request_id and SSH to each host in
 cftail (Use multitail to tail log_file and optionally grep for pattern)
 
 cftail-request (Look up tasks associated with request_id and use multitail to tail the log_file looking for them)
-
-**Note that this program can enable you to do things faster, including mistakes, use at your own risk.**
 
 # Installation:
 Recommended installation as root on the VMDB appliance.

@@ -20,9 +20,10 @@ MEMORY_MB=10240
 NAME=$(basename $0)
 function usage {
   echo
-  echo "Usage: $NAME ## purpose"
+  echo "Usage: $NAME ## purpose [vmdb_host]"
   echo "  ## is a number for cfme name found in hosts file."
   echo "  purpose is a one word name to remember this appliance by."
+  echo "  vmdb_host is the VMDB host to connect to, if none is specified the VMDB will be local."
   echo
   exit 1
 }
@@ -34,6 +35,11 @@ fi
 if [ -z "$2" ]
 then
   usage
+fi
+
+if [ -n "$3" ]
+then
+  VMDB="$3"
 fi
 
 which tcping > /dev/null 2>&1
@@ -121,7 +127,13 @@ sudo /usr/bin/virt-install \
 (
 ssh-keygen -R $CFME > /dev/null 2>&1
 ssh-copy-id -o StrictHostKeyChecking=no root@$CFME
-ssh -o StrictHostKeyChecking=no -t root@$CFME appliance_console_cli --region=1 --internal --password=smartvm --key --dbdisk=/dev/vdb
-sleep 5
-ssh root@$CFME systemctl start evmserverd
+if [ -z "$VMDB" ]
+then
+  ssh -o StrictHostKeyChecking=no -t root@$CFME appliance_console_cli --region=1 --internal --password=smartvm --key --dbdisk=/dev/vdb
+  sleep 5
+  ssh root@$CFME systemctl start evmserverd
+  ssh root@$CFME -t git clone https://github.com/jeffmcutter/cf_shortcuts.git \&\& mkdir bin \&\& ln -s /root/cf_shortcuts/check_ui bin/check_ui \&\& ln -s cf_shortcuts/cfssh \&\& echo "export PATH=\\\$PATH:\\\$HOME/cfssh" \>\> .bash_profile
+else
+  ssh -o StrictHostKeyChecking=no -t root@$CFME appliance_console_cli --hostname=$VMDB  --password=smartvm --fetch-key=$VMDB --sshpassword=smartvm \; systemctl start evmserverd
+fi
 )

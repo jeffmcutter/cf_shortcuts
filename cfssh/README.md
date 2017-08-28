@@ -364,7 +364,24 @@ README.md                                               100% 1020     1.0KB/s   
 
 *** cfme02 ***
 README.md                                               100% 1020     1.0KB/s   00:00    
+```
 ## cfcollect
+```
+$ cfcollect all /etc/hostname /tmp/
+
+*** cfme1 ***
+hostname                                                100%   22    39.2KB/s   00:00    
+
+*** cfme2 ***
+hostname                                                100%    6     9.0KB/s   00:00    
+
+*** cfme3 ***
+hostname                                                100%    6     9.5KB/s   00:00    
+
+$ ls /tmp/*hostname*
+/tmp/hostname-cfme1  /tmp/hostname-cfme2  /tmp/hostname-cfme3
+```
+## cfgrep
 ```
 
 $ cfgrep test ERROR evm  1
@@ -372,20 +389,6 @@ $ cfgrep test ERROR evm  1
 *** cfme30 ***
 [----] E, [2017-04-05T20:52:33.973282 #1660:89114c] ERROR -- : /opt/rh/cfme-gemset/gems/awesome_spawn-1.4.1/lib/awesome_spawn.rb:105:in `run!'
 
-```
-$ cfcollect all /etc/hostname /tmp/
-
-*** cfme1 ***
-hostname                                                                                                                                                                                                     100%   22    39.2KB/s   00:00    
-
-*** cfme2 ***
-hostname                                                                                                                                                                                                     100%    6     9.0KB/s   00:00    
-
-*** cfme3 ***
-hostname                                                                                                                                                                                                     100%    6     9.5KB/s   00:00    
-
-$ ls /tmp/*hostname*
-/tmp/hostname-cfme1  /tmp/hostname-cfme2  /tmp/hostname-cfme3
 ```
 ## cfgrep-collate
 ```
@@ -459,6 +462,8 @@ Running: multitail -L "ssh cfme1 tail -f /var/www/miq/vmdb/log/automation.log \|
 # Sample cfhosts file:
 
 ```
+# This file is a sample.  See cfhosts-gen script to generate this file by querying the VMDB.
+#
 # hostname_or_ip  <white space>	groups to assign host to separated by commas.
 #
 # Lines starting with a # are ignored.

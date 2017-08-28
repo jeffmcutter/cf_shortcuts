@@ -494,6 +494,10 @@ then
 
   if [[ $NAME == 'cfgrep-collate' || $NAME == 'cfgrep-request' ]]
   then
+    if [ "$TRANSPORT" == 'ansible' ]
+    then
+      echo
+    fi
     echo "*** collating results ***"
     if [ "$TRANSPORT" == 'pssh' ]
     then
@@ -503,6 +507,7 @@ then
     then
       awk '!/.* \| .* \| rc=.* >>/ {print}' $TMPFILE > $TMPFILE.ansible
       mv $TMPFILE.ansible $TMPFILE
+      sleep 1
     fi
     sort -k 4 $TMPFILE > $TMPFILE.sort
     mv $TMPFILE.sort $TMPFILE

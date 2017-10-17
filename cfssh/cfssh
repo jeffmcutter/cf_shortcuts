@@ -398,7 +398,7 @@ then
     echo
     TASK_IDS=$(echo $TASK_IDS)
     cd - > /dev/null
-    PATTERN="$REQUEST_ID|$(echo $TASK_IDS | sed 's/ /|/g')"
+    PATTERN="request_$REQUEST_ID|$(echo $TASK_IDS | sed -e 's/^/task_/' -e 's/ /|task_/g')"
     echo "*** looking for request_id: $REQUEST_ID and task_ids: $TASK_IDS ***"
     echo
     if [ $NAME == 'cftail-request' ]

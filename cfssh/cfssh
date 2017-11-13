@@ -147,7 +147,13 @@ function clean_pssh_out {
   fi
 }
 
-GREP="zgrep -e"
+if [[ $NAME == 'cftail' || $NAME == 'cftail-request' ]]
+then
+  GREP='grep -e'
+else
+  GREP="zgrep -e"
+fi
+
 L='L'
 
 SAVEOUT=false

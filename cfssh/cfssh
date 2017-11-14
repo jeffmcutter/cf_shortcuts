@@ -151,7 +151,7 @@ if [[ $NAME == 'cftail' || $NAME == 'cftail-request' ]]
 then
   GREP='grep -e'
 else
-  GREP="zgrep -e"
+  GREP='zgrep -e'
 fi
 
 L='L'
@@ -529,12 +529,12 @@ else
   then
     CLIENT_CMD="$TAIL $LOG"
   else
-    CLIENT_CMD="$TAIL $LOG \| $GREP \\\"$PATTERN\\\""
+    CLIENT_CMD="$TAIL $LOG | $GREP \\\"$PATTERN\\\""
   fi
 
   for i in $SERVERS
   do
-    COMMAND="$COMMAND -$L \"ssh $i $CLIENT_CMD | sed -e 's/^/[$i] /'\""
+    COMMAND="$COMMAND -$L \"ssh $i '$CLIENT_CMD' | sed -u -e 's/^/[$i] /'\""
   done
 
   echo "Running: $COMMAND"
@@ -547,3 +547,4 @@ if [ "$SAVEOUT" == 'true' ]
 then
   echo "Output File: $TMPFILE"
 fi
+

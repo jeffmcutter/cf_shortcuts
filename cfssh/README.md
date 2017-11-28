@@ -31,7 +31,6 @@ Recommended installation as root on the VMDB appliance.
 ```
 ssh root@cfme01
 cd
-yum -y install git
 git clone https://github.com/jeffmcutter/cf_shortcuts.git
 ln -s cf_shortcuts/cfssh
 mkdir bin

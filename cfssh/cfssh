@@ -85,6 +85,7 @@ function usage_output {
   then
     echo
     echo "  -o outputfile can be used to save output to outputfile"
+    echo "  -Q can be used to not less the output file automatically"
   fi
 }
 
@@ -115,8 +116,8 @@ function usage {
     "cfscp") usage_common "local_file remote_dest_dir" "push files out using scp" " " "  Only one file is supported at a time" ;;
     "cfcollect") usage_common "remote_file local_dest_dir" "pull files in using scp" " " "  Wildcards are accepted for remote_file but should only match one file" " " "  local_files are appended with remote hostname" ;;
     "cfgrep") usage_regex "[-a] [-c count] [-i] pattern [log_file]" "grep log_file for pattern and show last count number of lines" " " "  -c count is optional and used with tail to limit the output, default is $TAIL_NUMBER" "  To show all lines specify -c all" "$(eval usage_grep)" ;;
-    "cfgrep-collate") usage_regex "[-a] [-i] [-o outputfile] pattern [log_file]" "grep log_file for pattern and collate all results and display using less" "$(eval usage_grep)" ;;
-    "cfgrep-request") usage_request "[-a] [-o outputfile] request_id [log_file]" "grep log_file for request_id and all its associated tasks and collate all results and display with less" "$(eval usage_grep)" ;;
+    "cfgrep-collate") usage_regex "[-a] [-i] [-o outputfile] [-Q] pattern [log_file]" "grep log_file for pattern and collate all results and display using less" "$(eval usage_grep)" ;;
+    "cfgrep-request") usage_request "[-a] [-o outputfile] [-Q] request_id [log_file]" "grep log_file for request_id and all its associated tasks and collate all results and display with less" "$(eval usage_grep)" ;;
     "cftail") usage_regex "[-i] [-l] pattern [log_file]" "multitail and optionally grep pattern" "$(eval usage_tail)" ;;
     "cftail-request") usage_request "[-l] request_id [log_file]" "multitail and grep request_id and all its associated tasks" "$(eval usage_tail)" ;;
   esac
@@ -162,7 +163,7 @@ SAVEOUT=false
 #TRANSPORT=$(awk -F= '$1=="TRANSPORT" {print $2}' $DIR/.config)
 #PARALLELISM=$(awk -F= '$1=="PARALLELISM" {print $2}' $DIR/.config)
 
-while getopts ac:g:hilqo:s OPT
+while getopts ac:g:hilqQo:s OPT
 do
   case $OPT in
     a) GREP_ARCHIVED=true ;;
@@ -174,6 +175,7 @@ do
     o) SAVEOUT=true
        TMPFILE=$OPTARG
       ;;
+    Q) NOLESS=true ;;
     s) PARALLELISM=1 ;;
     *) usage ;;
   esac
@@ -449,7 +451,7 @@ then
 
   if [ "$TRANSPORT" == 'ssh' ]
   then
-  
+
     for i in $SERVERS
     do
       echo "*** $i ***"
@@ -517,7 +519,10 @@ then
     fi
     sort -k 4 $TMPFILE > $TMPFILE.sort
     mv $TMPFILE.sort $TMPFILE
-    less $TMPFILE
+    if [ "$NOLESS" != "true" ]
+    then
+      less $TMPFILE
+    fi
     echo
   fi
 

@@ -30,7 +30,9 @@ end
 
 def get_evm
     # Retrieve a new EVM object and set it to the $evm attribute.
-    MiqAeMethodService::MiqAeService.new(MiqAeEngine::MiqAeWorkspaceRuntime.new)
+    ws = MiqAeEngine::MiqAeWorkspaceRuntime.new
+    ws.ae_user = User.where(:userid => 'admin').first
+    MiqAeMethodService::MiqAeService.new(ws)
 end
 
 $evm = get_evm

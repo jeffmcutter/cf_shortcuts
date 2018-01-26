@@ -402,7 +402,8 @@ then
     REQUEST_ID=$(echo $PATTERN | sed 's/,//g')
     echo "*** looking for tasks associated with request_id: $REQUEST_ID ***"
     cd /var/www/miq/vmdb
-    TASK_IDS=$(echo "select id from miq_request_tasks where miq_request_id = $REQUEST_ID" | rails db | awk '$1!="id" && !/^---/ && !/^\(/ {print $1}' | sort -n)
+    #TASK_IDS=$(echo "select id from miq_request_tasks where miq_request_id = $REQUEST_ID" | rails db | awk '$1!="id" && !/^---/ && !/^\(/ {print $1}' | sort -n)
+    TASK_IDS=$(psql -d vmdb_production -c "select id from miq_request_tasks where miq_request_id = $REQUEST_ID" | awk '$1!="id" && !/^---/ && !/^\(/ {print $1}' | sort -n)
     echo
     TASK_IDS=$(echo $TASK_IDS)
     cd - > /dev/null

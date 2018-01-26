@@ -16,6 +16,7 @@ echo "#"
 
 cd /var/www/miq/vmdb
 
-echo 'select miq_servers.hostname, zones.name from miq_servers join zones on zones.id = miq_servers.zone_id;' | rails db | awk '$1!="hostname" && !/^---/ && !/^\(/ {print}' | sed -e 's/ //g' -e 's/|/ /' -e '/^$/d'
+#echo 'select miq_servers.hostname, zones.name from miq_servers join zones on zones.id = miq_servers.zone_id;' | rails db | awk '$1!="hostname" && !/^---/ && !/^\(/ {print}' | sed -e 's/ //g' -e 's/|/ /' -e '/^$/d'
+psql -d vmdb_production -c 'select miq_servers.hostname, zones.name from miq_servers join zones on zones.id = miq_servers.zone_id;' | awk '$1!="hostname" && !/^---/ && !/^\(/ {print}' | sed -e 's/ //g' -e 's/|/ /' -e '/^$/d'
 
 cd - > /dev/null

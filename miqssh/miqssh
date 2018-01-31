@@ -12,6 +12,14 @@ miqhosts_file="$DIR/miqhosts"
 USER="root"
 REQUEST=false
 
+if [ ! -f $miqhosts_file ]
+then
+  echo
+  echo "Some initial setup is required to use this.  See $DIR/INSTALL.txt."
+  echo
+  exit 1
+fi
+
 if [ $NAME == "miqgrep-collate" ]
 then
   NAME=miqgrep

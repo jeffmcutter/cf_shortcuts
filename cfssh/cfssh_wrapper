@@ -29,7 +29,7 @@ shift $((OPTIND-1))
 
 case $NAME in
   cfstatus) tool="cfssh" command="cd /var/www/miq/vmdb && rake evm:status" ;;
-  cfworkermemcheck) tool="cfgrep-collate" outputfile="/tmp/.cfworkermemcheck.$$" Q="-Q" output="-o $outputfile" command="exceeded limit" ;;
+  cfworkermemcheck) tool="cfgrep" outputfile="/tmp/.cfworkermemcheck.$$" Q="-Q" output="-o $outputfile" command="exceeded limit" ;;
   *) echo "Unknown command."
      usage
      ;;

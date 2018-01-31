@@ -2,7 +2,7 @@
 
 These tools allow for running commands and copying files and searching log files against multiple CloudForms appliances in an environment based on groups defined in hosts files.
 
-Also, even if you do have pssh or other tools for running commands on multiple systems, the new cfgrep, cfgrep-collate, cfgrep-request, cftail, and cftail-request are probably worth a look.
+Also, even if you do have pssh or other tools for running commands on multiple systems, the new cfgrep, cfgrep -r, cftail, and cftail -r are worth a look.
 
 Different transport mechanisms are now supported and can be selected by updating the .config file.  By default, Ansible is used since it can work in parallel and is included by default on a CloudForms appliance.  Alternatively, if installed and selected, Parallel SSH can be used and is faster opening connections than Ansible.
 
@@ -10,21 +10,19 @@ Different transport mechanisms are now supported and can be selected by updating
 
 # Command Descriptions:
 
-cfssh (SSH to each host in group and run provided commands)
+cfssh (connect to each host in group and run provided commands)
 
-cfscp (SCP file TO each host in group)
+cfscp (copy file TO each host in group)
 
-cfcollect (SCP file FROM each host in group)
+cfcollect (copy file FROM each host in group)
 
-cfgrep (SSH to each host in group and grep log_file for pattern limited by tail)
+cfgrep (connect to each host in group and grep log_file for pattern or request_id and associated task_ids and collate all results and display using less)
 
-cfgrep-collate (SSH to each host in group and grep log_file for pattern and collate results)
+cftail (Use multitail to tail log_file and optionally grep for pattern or request_id and associated task_ids)
 
-cfgrep-request (Look up tasks associated with request_id and SSH to each host in group and grep log_file for request_id and task_ids and collate results)
+cfstatus (run rake evm:status on each host in group)
 
-cftail (Use multitail to tail log_file and optionally grep for pattern)
-
-cftail-request (Look up tasks associated with request_id and use multitail to tail the log_file looking for them)
+cfworkermemcheck (search for memory exceeded messages in automation.log)
 
 # Installation:
 Recommended installation as root on the VMDB appliance.
@@ -49,7 +47,7 @@ Update cfhosts file with appropriate group assignments as desired.
 
 You can get multitail and pssh from EPEL (https://fedoraproject.org/wiki/EPEL).
 
-**-request commands can only be run from a ManageIQ/CloudForms appliance in the region in question.*
+**-r option can only be used from a ManageIQ/CloudForms VMDB appliance in the region in question.*
 
 
 # Usages:
@@ -143,9 +141,9 @@ cfcollect [-q] -g <group> list
 ## cfgrep
 ```
 
-DESCRIPTION: grep log_file for pattern and show last count number of lines
+DESCRIPTION: grep log_file for pattern or request_id and associated task_ids and collate all results and display using less
 
-USAGE: cfgrep [-g group] [-s] [-a] [-c count] [-i] pattern [log_file]
+USAGE: cfgrep [-g group] [-s] [-a] [-i] [-o outputfile] [-Q] (pattern | -r request_id) [log_file]
 
 DETAILS:
 
@@ -153,13 +151,15 @@ DETAILS:
 
   pattern may be specified as a regex suitable for egrep taking care to prevent the shell from interpretation
   pattern may be specified as 'nogrep' to have no grep or use cat instead of grep
+  -r request_id maybe used to search for a request_id and associated task_ids
+    request_id can be provided with or without commas
+
+  -o outputfile can be used to save output to outputfile
+  -Q can be used to not less the output file automatically
 
   log_file is optional and defaults to automation.log
     For CloudForms logs, log_file can be in the format of evm or evm.log
     For any other files, use /the/full/path/to/file
- 
-  -c count is optional and used with tail to limit the output, default is 3
-  To show all lines specify -c all
 
   -a can be used to also grep archived logs
 
@@ -181,89 +181,12 @@ cfgrep [-q] -g <group> list
   -q to suppress header
 
 ```
-## cfgrep-collate
-```
-
-DESCRIPTION: grep log_file for pattern and collate all results and display using less
-
-USAGE: cfgrep-collate [-g group] [-s] [-a] [-i] [-o outputfile] pattern [log_file]
-
-DETAILS:
-
-  -i is optional to ignore case with grep
-
-  pattern may be specified as a regex suitable for egrep taking care to prevent the shell from interpretation
-  pattern may be specified as 'nogrep' to have no grep or use cat instead of grep
-
-  -o outputfile can be used to save output to outputfile
-
-  log_file is optional and defaults to automation.log
-    For CloudForms logs, log_file can be in the format of evm or evm.log
-    For any other files, use /the/full/path/to/file
-
-  -a can be used to also grep archived logs
-
-  -s to run serially
-
-AVAILABLE GROUPS (default is all):
-
-  all
-  all_no_db
-  db
-  ui
-  workers
-  zone1
-  zone2
-
-To see matching hosts for a given group, use:
-
-cfgrep-collate [-q] -g <group> list
-  -q to suppress header
-
-```
-## cfgrep-request
-```
-
-DESCRIPTION: grep log_file for request_id and all its associated tasks and collate all results and display with less
-
-USAGE: cfgrep-request [-g group] [-s] [-a] [-o outputfile] request_id [log_file]
-
-DETAILS:
-
-  commas in request_id will automatically be stripped
-
-  -o outputfile can be used to save output to outputfile
-
-  log_file is optional and defaults to automation.log
-    For CloudForms logs, log_file can be in the format of evm or evm.log
-    For any other files, use /the/full/path/to/file
-
-  -a can be used to also grep archived logs
-
-  -s to run serially
-
-AVAILABLE GROUPS (default is all):
-
-  all
-  all_no_db
-  db
-  ui
-  workers
-  zone1
-  zone2
-
-To see matching hosts for a given group, use:
-
-cfgrep-request [-q] -g <group> list
-  -q to suppress header
-
-```
 ## cftail
 ```
 
-DESCRIPTION: multitail and optionally grep pattern
+DESCRIPTION: multitail and grep pattern or request_id and associated task_ids
 
-USAGE: cftail [-g group] [-s] [-i] [-l] pattern [log_file]
+USAGE: cftail [-g group] [-s] [-i] [-l] (pattern | -r request_id) [log_file]
 
 DETAILS:
 
@@ -271,6 +194,8 @@ DETAILS:
 
   pattern may be specified as a regex suitable for egrep taking care to prevent the shell from interpretation
   pattern may be specified as 'nogrep' to have no grep or use cat instead of grep
+  -r request_id maybe used to search for a request_id and associated task_ids
+    request_id can be provided with or without commas
 
   log_file is optional and defaults to automation.log
     For CloudForms logs, log_file can be in the format of evm or evm.log
@@ -300,51 +225,12 @@ cftail [-q] -g <group> list
   -q to suppress header
 
 ```
-## cftail-request
-```
-
-DESCRIPTION: multitail and grep request_id and all its associated tasks
-
-USAGE: cftail-request [-g group] [-s] [-l] request_id [log_file]
-
-DETAILS:
-
-  commas in request_id will automatically be stripped
-
-  log_file is optional and defaults to automation.log
-    For CloudForms logs, log_file can be in the format of evm or evm.log
-    For any other files, use /the/full/path/to/file
-
-  -l can be used to place output in separate window panes, by default output is merged
-
-  In multitail:
-    Move around the buffer similar to less by pressing 'b'
-    Exit whatever context you are in by pressing 'q'
-
-  -s to run serially
-
-AVAILABLE GROUPS (default is all):
-
-  all
-  all_no_db
-  db
-  ui
-  workers
-  zone1
-  zone2
-
-To see matching hosts for a given group, use:
-
-cftail-request [-q] -g <group> list
-  -q to suppress header
-
-```
 
 
 # Examples:
 ## cfssh
 ```
-$ cfssh all uptime
+$ cfssh uptime
 
 *** cfme01 ***
  16:19:34 up  5:43,  0 users,  load average: 3.10, 3.06, 3.09
@@ -357,7 +243,7 @@ $ cfssh all uptime
 ```
 ## cfscp
 ```
-$ cfscp all README.md /tmp/
+$ cfscp README.md /tmp/
 
 *** cfme01 ***
 README.md                                               100% 1020     1.0KB/s   00:00    
@@ -367,7 +253,7 @@ README.md                                               100% 1020     1.0KB/s   
 ```
 ## cfcollect
 ```
-$ cfcollect all /etc/hostname /tmp/
+$ cfcollect /etc/hostname /tmp/
 
 *** cfme1 ***
 hostname                                                100%   22    39.2KB/s   00:00    
@@ -381,18 +267,9 @@ hostname                                                100%    6     9.5KB/s   
 $ ls /tmp/*hostname*
 /tmp/hostname-cfme1  /tmp/hostname-cfme2  /tmp/hostname-cfme3
 ```
-## cfgrep
+## cfgrep pattern
 ```
-
-$ cfgrep test ERROR evm  1
-
-*** cfme30 ***
-[----] E, [2017-04-05T20:52:33.973282 #1660:89114c] ERROR -- : /opt/rh/cfme-gemset/gems/awesome_spawn-1.4.1/lib/awesome_spawn.rb:105:in `run!'
-
-```
-## cfgrep-collate
-```
-$ cfgrep-collate all "MiqEventHandler#log_status" evm
+$ cfgrep "MiqEventHandler#log_status" evm
 
 *** cfme1 ***
 
@@ -407,9 +284,9 @@ $ cfgrep-collate all "MiqEventHandler#log_status" evm
 [cfme1] [----] I, [2017-08-11T19:11:22.361405 #2949:b81140]  INFO -- : Q-task_id([log_status]) MIQ(MiqEventHandler#log_status) [Event Handler] Worker ID [1000000001071], PID [2922], GUID [c0f9c28a-7ed6-11e7-8b18-525400431635], Last Heartbeat [2017-08-11 23:11:14 UTC], Process Info: Memory Usage [310091776], Memory Size [652206080], Proportional Set Size: [203977000], Memory % [3.01], CPU Time [785.0], CPU % [0.09], Priority [27]
 [cfme2] [----] I, [2017-08-11T19:11:24.019597 #2765:623130]  INFO -- : Q-task_id([log_status]) MIQ(MiqEventHandler#log_status) [Event Handler] Worker ID [1000000002270], PID [2756], GUID [f99103f2-7eda-11e7-a70f-5254003dad57], Last Heartbeat [2017-08-11 23:11:21 UTC], Process Info: Memory Usage [338751488], Memory Size [672755712], Proportional Set Size: [235704000], Memory % [3.28], CPU Time [774.0], CPU % [0.12], Priority [27]
 ```
-## cfgrep-request
+## cfgrep -r request_id
 ```
-$ cfgrep-request all 1,000,000,000,088
+$ cfgrep -r 1,000,000,000,088
 
 *** looking for tasks associated with request_id: 1000000000088 ***
 
@@ -427,9 +304,9 @@ $ cfgrep-request all 1,000,000,000,088
 [cfme2] [----] I, [2017-08-11T19:30:25.664169 #2773:3e3f758]  INFO -- : Q-task_id([service_template_provision_task_1000000000087]) Updated namespace [/System/Process/REQUEST?MiqProvisionRequest%3A%3Amiq_provision_request=1000000000088&MiqRequest%3A%3Amiq_request=1000000000088&MiqServer%3A%3Amiq_server=1000000000001&User%3A%3Auser=1000000000001&message=get_vmname&object_name=REQUEST&request=UI_PROVISION_INFO&vmdb_object_type=miq_provision_request  ManageIQ/System]
 ...
 ```
-## cftail
+## cftail pattern
 ```
-$ cftail all "ERROR|WARN" evm
+$ cftail "ERROR|WARN" evm
 
 Running: multitail -L "ssh cfme1 tail -f /var/www/miq/vmdb/log/evm.log \| egrep \"ERROR\|WARN\" | sed -e 's/^/[cfme1] /'" -L "ssh cfme2 tail -f /var/www/miq/vmdb/log/evm.log \| egrep \"ERROR\|WARN\" | sed -e 's/^/[cfme2] /'" -L "ssh cfme3 tail -f /var/www/miq/vmdb/log/evm.log \| egrep \"ERROR\|WARN\" | sed -e 's/^/[cfme3] /'"
 
@@ -444,9 +321,9 @@ Running: multitail -L "ssh cfme1 tail -f /var/www/miq/vmdb/log/evm.log \| egrep 
 [cfme2] [----] W, [2017-08-11T18:36:44.479934 #2738:623130]  WARN -- : MIQ(ManageIQ::Providers::Foreman::ConfigurationManager::RefreshParser#configuration_profile_inv_to_hashes) hostgroup openstack missing: location
 
 ```
-## cftail-request
+## cftail -r request_id
 ```
-$ cftail-request all 1,000,000,000,088
+$ cftail -r 1,000,000,000,088
 
 *** looking for tasks associated with request_id: 1000000000088 ***
 

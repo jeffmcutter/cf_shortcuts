@@ -2,7 +2,7 @@
 
 cat ~/git/cf_shortcuts/cfssh/doc-tools/HEAD.md > ~/git/cf_shortcuts/cfssh/README.md
 
-commands="cfssh cfscp cfcollect cfgrep cfgrep-collate cfgrep-request cftail cftail-request"
+commands="cfssh cfscp cfcollect cfgrep cftail"
 
 for i in $commands
 do

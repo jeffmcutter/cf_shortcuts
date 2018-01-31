@@ -3,7 +3,7 @@
 # Examples:
 ## cfssh
 ```
-$ cfssh all uptime
+$ cfssh uptime
 
 *** cfme01 ***
  16:19:34 up  5:43,  0 users,  load average: 3.10, 3.06, 3.09
@@ -16,7 +16,7 @@ $ cfssh all uptime
 ```
 ## cfscp
 ```
-$ cfscp all README.md /tmp/
+$ cfscp README.md /tmp/
 
 *** cfme01 ***
 README.md                                               100% 1020     1.0KB/s   00:00    
@@ -26,7 +26,7 @@ README.md                                               100% 1020     1.0KB/s   
 ```
 ## cfcollect
 ```
-$ cfcollect all /etc/hostname /tmp/
+$ cfcollect /etc/hostname /tmp/
 
 *** cfme1 ***
 hostname                                                100%   22    39.2KB/s   00:00    
@@ -40,18 +40,9 @@ hostname                                                100%    6     9.5KB/s   
 $ ls /tmp/*hostname*
 /tmp/hostname-cfme1  /tmp/hostname-cfme2  /tmp/hostname-cfme3
 ```
-## cfgrep
+## cfgrep pattern
 ```
-
-$ cfgrep test ERROR evm  1
-
-*** cfme30 ***
-[----] E, [2017-04-05T20:52:33.973282 #1660:89114c] ERROR -- : /opt/rh/cfme-gemset/gems/awesome_spawn-1.4.1/lib/awesome_spawn.rb:105:in `run!'
-
-```
-## cfgrep-collate
-```
-$ cfgrep-collate all "MiqEventHandler#log_status" evm
+$ cfgrep "MiqEventHandler#log_status" evm
 
 *** cfme1 ***
 
@@ -66,9 +57,9 @@ $ cfgrep-collate all "MiqEventHandler#log_status" evm
 [cfme1] [----] I, [2017-08-11T19:11:22.361405 #2949:b81140]  INFO -- : Q-task_id([log_status]) MIQ(MiqEventHandler#log_status) [Event Handler] Worker ID [1000000001071], PID [2922], GUID [c0f9c28a-7ed6-11e7-8b18-525400431635], Last Heartbeat [2017-08-11 23:11:14 UTC], Process Info: Memory Usage [310091776], Memory Size [652206080], Proportional Set Size: [203977000], Memory % [3.01], CPU Time [785.0], CPU % [0.09], Priority [27]
 [cfme2] [----] I, [2017-08-11T19:11:24.019597 #2765:623130]  INFO -- : Q-task_id([log_status]) MIQ(MiqEventHandler#log_status) [Event Handler] Worker ID [1000000002270], PID [2756], GUID [f99103f2-7eda-11e7-a70f-5254003dad57], Last Heartbeat [2017-08-11 23:11:21 UTC], Process Info: Memory Usage [338751488], Memory Size [672755712], Proportional Set Size: [235704000], Memory % [3.28], CPU Time [774.0], CPU % [0.12], Priority [27]
 ```
-## cfgrep-request
+## cfgrep -r request_id
 ```
-$ cfgrep-request all 1,000,000,000,088
+$ cfgrep -r 1,000,000,000,088
 
 *** looking for tasks associated with request_id: 1000000000088 ***
 
@@ -86,9 +77,9 @@ $ cfgrep-request all 1,000,000,000,088
 [cfme2] [----] I, [2017-08-11T19:30:25.664169 #2773:3e3f758]  INFO -- : Q-task_id([service_template_provision_task_1000000000087]) Updated namespace [/System/Process/REQUEST?MiqProvisionRequest%3A%3Amiq_provision_request=1000000000088&MiqRequest%3A%3Amiq_request=1000000000088&MiqServer%3A%3Amiq_server=1000000000001&User%3A%3Auser=1000000000001&message=get_vmname&object_name=REQUEST&request=UI_PROVISION_INFO&vmdb_object_type=miq_provision_request  ManageIQ/System]
 ...
 ```
-## cftail
+## cftail pattern
 ```
-$ cftail all "ERROR|WARN" evm
+$ cftail "ERROR|WARN" evm
 
 Running: multitail -L "ssh cfme1 tail -f /var/www/miq/vmdb/log/evm.log \| egrep \"ERROR\|WARN\" | sed -e 's/^/[cfme1] /'" -L "ssh cfme2 tail -f /var/www/miq/vmdb/log/evm.log \| egrep \"ERROR\|WARN\" | sed -e 's/^/[cfme2] /'" -L "ssh cfme3 tail -f /var/www/miq/vmdb/log/evm.log \| egrep \"ERROR\|WARN\" | sed -e 's/^/[cfme3] /'"
 
@@ -103,9 +94,9 @@ Running: multitail -L "ssh cfme1 tail -f /var/www/miq/vmdb/log/evm.log \| egrep 
 [cfme2] [----] W, [2017-08-11T18:36:44.479934 #2738:623130]  WARN -- : MIQ(ManageIQ::Providers::Foreman::ConfigurationManager::RefreshParser#configuration_profile_inv_to_hashes) hostgroup openstack missing: location
 
 ```
-## cftail-request
+## cftail -r request_id
 ```
-$ cftail-request all 1,000,000,000,088
+$ cftail -r 1,000,000,000,088
 
 *** looking for tasks associated with request_id: 1000000000088 ***
 

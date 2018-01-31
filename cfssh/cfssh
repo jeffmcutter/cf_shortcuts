@@ -13,6 +13,24 @@ DIR=$(dirname $0)
 cfhosts_cmd="$DIR/cfhosts.rb"
 cfhosts_file="$DIR/cfhosts"
 USER="root"
+REQUEST=false
+
+if [ $NAME == "cfgrep-collate" ]
+then
+  NAME=cfgrep
+fi
+
+if [ $NAME == "cfgrep-request" ]
+then
+  NAME=cfgrep
+  REQUEST=true
+fi
+
+if [ $NAME == "cftail-request" ]
+then
+  NAME=cftail
+  REQUEST=true
+fi
 
 groups=$($cfhosts_cmd $cfhosts_file list_groups)
 
@@ -55,15 +73,9 @@ function usage_log_file {
 function usage_pattern {
   echo
   echo "  pattern may be specified as a regex suitable for egrep taking care to prevent the shell from interpretation"
-  if [[ $NAME != 'cfgrep-request' || $NAME != 'cftail-request' ]]
-  then
-    echo "  pattern may be specified as 'nogrep' to have no grep or use cat instead of grep"
-  fi
-}
-
-function usage_commas {
-  echo
-  echo "  commas in request_id will automatically be stripped"
+  echo "  pattern may be specified as 'nogrep' to have no grep or use cat instead of grep"
+  echo "  -r request_id maybe used to search for a request_id and associated task_ids"
+  echo "    request_id can be provided with or without commas"
 }
 
 function usage_tail {
@@ -81,7 +93,7 @@ function usage_grep {
 }
 
 function usage_output {
-  if [[ $NAME == 'cfgrep-collate' || $NAME == 'cfgrep-request' ]]
+  if [ $NAME == 'cfgrep' ]
   then
     echo
     echo "  -o outputfile can be used to save output to outputfile"
@@ -102,24 +114,14 @@ function usage_regex {
 }
 
 
-function usage_request {
-  USAGE=$1
-  DESCRIPTION=$2
-  shift 2
-  usage_common "$USAGE" "$DESCRIPTION" "$(eval usage_commas)" "$(eval usage_output)" "$(eval usage_log_file)" "$@"
-}
-
 function usage {
   echo
   case $NAME in
     "cfssh") usage_common "command args" "ssh and run command with args" ;;
     "cfscp") usage_common "local_file remote_dest_dir" "push files out using scp" " " "  Only one file is supported at a time" ;;
     "cfcollect") usage_common "remote_file local_dest_dir" "pull files in using scp" " " "  Wildcards are accepted for remote_file but should only match one file" " " "  local_files are appended with remote hostname" ;;
-    "cfgrep") usage_regex "[-a] [-c count] [-i] pattern [log_file]" "grep log_file for pattern and show last count number of lines" " " "  -c count is optional and used with tail to limit the output, default is $TAIL_NUMBER" "  To show all lines specify -c all" "$(eval usage_grep)" ;;
-    "cfgrep-collate") usage_regex "[-a] [-i] [-o outputfile] [-Q] pattern [log_file]" "grep log_file for pattern and collate all results and display using less" "$(eval usage_grep)" ;;
-    "cfgrep-request") usage_request "[-a] [-o outputfile] [-Q] request_id [log_file]" "grep log_file for request_id and all its associated tasks and collate all results and display with less" "$(eval usage_grep)" ;;
-    "cftail") usage_regex "[-i] [-l] pattern [log_file]" "multitail and optionally grep pattern" "$(eval usage_tail)" ;;
-    "cftail-request") usage_request "[-l] request_id [log_file]" "multitail and grep request_id and all its associated tasks" "$(eval usage_tail)" ;;
+    "cfgrep") usage_regex "[-a] [-i] [-o outputfile] [-Q] (pattern | -r request_id) [log_file]" "grep log_file for pattern or request_id and associated task_ids and collate all results and display using less" "$(eval usage_grep)" ;;
+    "cftail") usage_regex "[-i] [-l] (pattern | -r request_id) [log_file]" "multitail and grep pattern or request_id and associated task_ids" "$(eval usage_tail)" ;;
   esac
   echo "AVAILABLE GROUPS (default is all):"
   echo
@@ -148,7 +150,7 @@ function clean_pssh_out {
   fi
 }
 
-if [[ $NAME == 'cftail' || $NAME == 'cftail-request' ]]
+if [ $NAME == 'cftail' ]
 then
   GREP='grep -e'
 else
@@ -160,10 +162,8 @@ L='L'
 SAVEOUT=false
 
 . $DIR/.config
-#TRANSPORT=$(awk -F= '$1=="TRANSPORT" {print $2}' $DIR/.config)
-#PARALLELISM=$(awk -F= '$1=="PARALLELISM" {print $2}' $DIR/.config)
 
-while getopts ac:g:hilqQo:s OPT
+while getopts ac:g:hilqQo:sr OPT
 do
   case $OPT in
     a) GREP_ARCHIVED=true ;;
@@ -177,6 +177,7 @@ do
       ;;
     Q) NOLESS=true ;;
     s) PARALLELISM=1 ;;
+    r) REQUEST=true ;;
     *) usage ;;
   esac
 done
@@ -218,7 +219,7 @@ then
   fi
 fi
 
-if [[ $NAME == 'cfgrep-collate' || $NAME == 'cfgrep-request' ]]
+if [ $NAME == 'cfgrep' ]
 then
   if [ -z "$TMPFILE" ]
   then
@@ -244,7 +245,7 @@ then
   fi
 fi
 
-if [[ $NAME != 'cfgrep-collate' && $NAME != 'cfgrep-request' && "$SAVEOUT" == 'true' ]]
+if [[ $NAME != 'cfgrep' && "$SAVEOUT" == 'true' ]]
 then
   echo
   echo "$NAME does not support -o option."
@@ -271,7 +272,7 @@ then
   echo
   echo "Not enough arguments!"
   usage
-elif [[ $NAME == 'cfgrep' || $NAME == 'cfgrep-collate' || $NAME == "cfgrep-request" || $NAME == "cftail" || $NAME == "cftail-request" ]]
+elif [[ $NAME == 'cfgrep' || $NAME == "cftail" ]]
 then
   if [[ $# -ne 1 && $# -ne 2 ]]
   then
@@ -307,7 +308,7 @@ then
   usage
 fi
 
-if [[ $NAME == 'cfgrep-request' || $NAME == 'cftail-request' ]]
+if [ $REQUEST == 'true' ]
 then
   if [ ! -d '/var/www/miq/vmdb' ]
   then
@@ -318,13 +319,13 @@ then
   fi
 fi
 
-if [[ $NAME == 'cftail' || $NAME == 'cftail-request' ]]
+if [ $NAME == 'cftail' ]
 then
   which multitail > /dev/null 2>&1
   if [ $? -ne 0 ]
   then
     echo
-    echo "ERROR: $NAME requires multitail be installed an in PATH!"
+    echo "ERROR: $NAME requires multitail be installed in PATH!"
     echo
     exit 1
   fi
@@ -366,7 +367,7 @@ then
   usage
 fi
 
-if [[ "$QUIET" != 'true' && "$TRANSPORT" != 'pssh' && "$TRANSPORT" != 'ansible' || $NAME == 'cfgrep-request' ]]
+if [[ "$QUIET" != 'true' && "$TRANSPORT" != 'pssh' && "$TRANSPORT" != 'ansible' || ( $NAME == 'cfgrep' && $REQUEST == 'true' ) ]]
 then
   echo
 fi
@@ -386,18 +387,18 @@ then
   exit
 fi
 
-if [[ $NAME == 'cfgrep' || $NAME == 'cfgrep-collate' || $NAME == 'cfgrep-request' || $NAME == 'cftail' || $NAME == 'cftail-request' ]]
+if [[ $NAME == 'cfgrep' || $NAME == 'cftail' ]]
 then
   PATTERN="$1"
   if [ "$PATTERN" == 'nogrep' ]
   then
-    if [[ $NAME == 'cfgrep' || $NAME == 'cfgrep-collate' ]]
+    if [ $NAME == 'cfgrep' ]
     then
       GREP='cat'
     PATTERN=''
     fi
   fi
-  if [[ $NAME == 'cfgrep-request' || $NAME == 'cftail-request' ]]
+  if [ $REQUEST == 'true' ]
   then
     REQUEST_ID=$(echo $PATTERN | sed 's/,//g')
     echo "*** looking for tasks associated with request_id: $REQUEST_ID ***"
@@ -410,7 +411,7 @@ then
     PATTERN="request_$REQUEST_ID$(for i in $TASK_IDS; do echo -n "|task_$i|provision_$i"; done)"
     echo "*** looking for request_id: $REQUEST_ID and task_id/provision_id: $TASK_IDS ***"
     echo
-    if [ $NAME == 'cftail-request' ]
+    if [[ $NAME == 'cftail' && REQUEST == 'true' ]]
     then
       sleep 1
     fi
@@ -425,15 +426,12 @@ then
   then
     LOG="/var/www/miq/vmdb/log/$(echo $LOG | sed 's/\.log$//').log"
   fi
-  if [[ $NAME == 'cfgrep' || $NAME == 'cfgrep-collate' || $NAME == 'cfgrep-request' ]]
+  if [ $NAME == 'cfgrep' ]
   then
     if [ "$GREP_ARCHIVED" == 'true' ]
     then
       LOG="$LOG-* $LOG"
     fi
-  fi
-  if [[ $NAME == 'cfgrep' ]]
-  then
     if [ "$TAIL_NUMBER" == 'all' ]
     then
       TAIL_NUMBER=$ALL_TAIL_NUMBER
@@ -447,7 +445,7 @@ fi
 ARGS=$*
 ARGS=$(echo $ARGS | sed 's/*/\\*/g')
 
-if [[ $NAME != 'cftail' && $NAME != 'cftail-request' ]]
+if [ $NAME != 'cftail' ]
 then
 
   if [ "$TRANSPORT" == 'ssh' ]
@@ -460,8 +458,7 @@ then
         "cfssh") ssh $USER@$i $ARGS ;;
         "cfscp") scp $1 $USER@$i:$2 ;;
         "cfcollect") scp $USER@$i:$1 $2/$(basename $1)-$i ;;
-        "cfgrep") ssh $USER@$i "$GREP \"$PATTERN\" $LOG | $TAIL" | perl -pe 's/^\/.*?://' ;;
-        "cfgrep-collate"|"cfgrep-request") ssh $USER@$i "$GREP \"$PATTERN\" $LOG" | perl -pe 's/^\/.*?://' | sed -e "s/^/[$i] /" >> $TMPFILE ;;
+        "cfgrep") ssh $USER@$i "$GREP \"$PATTERN\" $LOG" | perl -pe 's/^\/.*?://' | sed -e "s/^/[$i] /" >> $TMPFILE ;;
       esac
       echo
     done
@@ -479,8 +476,7 @@ then
       "cfssh") pssh -t 0 -i $HOSTS $ARGS ;;
       "cfscp") pscp.pssh -t 0 $HOSTS $1 $2 ;;
       "cfcollect") pslurp -t 0 $HOSTS -L $2 $1 . ;;
-      "cfgrep") pssh -t 0 -i $HOSTS -o $PSSH_OUTDIR "$GREP \"$PATTERN\" $LOG | $TAIL | perl -pe 's/^\/.*?://'" ;;
-      "cfgrep-collate"|"cfgrep-request") pssh -t 0 $HOSTS -o $PSSH_OUTDIR "$GREP \"$PATTERN\" $LOG | perl -pe 's/^\/.*?://' | sed -e \"s/^/[\$(hostname -s)] /\"" ;;
+      "cfgrep") pssh -t 0 $HOSTS -o $PSSH_OUTDIR "$GREP \"$PATTERN\" $LOG | perl -pe 's/^\/.*?://' | sed -e \"s/^/[\$(hostname -s)] /\"" ;;
     esac
 
   elif [ "$TRANSPORT" == 'ansible' ]
@@ -492,8 +488,7 @@ then
       "cfssh") ansible all -i $HOSTS -f $PARALLELISM -m shell -a "$ARGS" ;;
       "cfscp") ansible all -i $HOSTS -f $PARALLELISM -m copy -a "src=$1 dest=$2" ;;
       "cfcollect") ansible all -i $HOSTS -f $PARALLELISM -m fetch -a "src=$1 dest=$2/$(basename $1)-{{ inventory_hostname }} flat=yes" ;;
-      "cfgrep") ansible all -i $HOSTS -f $PARALLELISM -m shell -a "$GREP \"$PATTERN\" $LOG | $TAIL | perl -pe 's/^\/.*?://'" ;;
-      "cfgrep-collate"|"cfgrep-request") ansible all -i $HOSTS -f $PARALLELISM -m shell -a "$GREP \"$PATTERN\" $LOG | perl -pe 's/^\/.*?://' | sed -e \"s/^/[\$(hostname -s)] /\"" | tee $TMPFILE ;;
+      "cfgrep") ansible all -i $HOSTS -f $PARALLELISM -m shell -a "$GREP \"$PATTERN\" $LOG | perl -pe 's/^\/.*?://' | sed -e \"s/^/[\$(hostname -s)] /\"" | tee $TMPFILE ;;
     esac
 
   else
@@ -501,7 +496,7 @@ then
     exit 1
   fi
 
-  if [[ $NAME == 'cfgrep-collate' || $NAME == 'cfgrep-request' ]]
+  if [ $NAME == 'cfgrep' ]
   then
     if [ "$TRANSPORT" == 'ansible' ]
     then

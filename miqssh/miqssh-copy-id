@@ -2,7 +2,7 @@
 
 DIR=$(dirname $0)
 
-HOSTS=$(awk '!/^#/ {print $1}' $DIR/cfhosts)
+HOSTS=$(awk '!/^#/ {print $1}' $DIR/miqhosts)
 
 for i in $HOSTS
 do

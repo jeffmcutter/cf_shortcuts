@@ -1,15 +1,17 @@
 #!/bin/bash
 
-cat ~/git/cf_shortcuts/cfssh/doc-tools/HEAD.md > ~/git/cf_shortcuts/cfssh/README.md
+DIR=$(dirname $(realpath $0))
+DEST=$(dirname $DIR)
+cat $DIR/HEAD.md > $DEST/README.md
 
-commands="cfssh cfscp cfcollect cfgrep cftail"
+commands="miqssh miqscp miqcollect miqgrep miqtail"
 
 for i in $commands
 do
   echo "## $i"
   echo '```'
-  ~/git/cf_shortcuts/cfssh/$i -h
+  $DEST/$i -h
   echo '```'
-done >> ~/git/cf_shortcuts/cfssh/README.md
+done >> $DEST/README.md
 
-cat ~/git/cf_shortcuts/cfssh/doc-tools/FOOT.md >> ~/git/cf_shortcuts/cfssh/README.md
+cat $DIR/FOOT.md >> $DEST/README.md

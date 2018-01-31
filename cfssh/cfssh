@@ -13,6 +13,24 @@ DIR=$(dirname $0)
 cfhosts_cmd="$DIR/cfhosts.rb"
 cfhosts_file="$DIR/cfhosts"
 USER="root"
+REQUEST=false
+
+if [ $NAME == "cfgrep-collate" ]
+then
+  NAME=cfgrep
+fi
+
+if [ $NAME == "cfgrep-request" ]
+then
+  NAME=cfgrep
+  REQUEST=true
+fi
+
+if [ $NAME == "cftail-request" ]
+then
+  NAME=cftail
+  REQUEST=true
+fi
 
 groups=$($cfhosts_cmd $cfhosts_file list_groups)
 
@@ -142,7 +160,6 @@ fi
 L='L'
 
 SAVEOUT=false
-REQUEST=false
 
 . $DIR/.config
 

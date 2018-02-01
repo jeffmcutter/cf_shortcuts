@@ -27,7 +27,7 @@ miqworkermemcheck (search for memory exceeded messages in automation.log)
 # Installation:
 Recommended to be used / installed on the VMDB as root.
 ```
-ssh root@miqme01
+ssh root@miq01
 cd
 git clone https://github.com/jeffmcutter/cf_shortcuts.git
 ln -s cf_shortcuts/miqssh

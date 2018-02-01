@@ -29,10 +29,10 @@ Recommended to be used / installed on the VMDB as root.
 ```
 ssh root@miqme01
 cd
-git clone https://github.com/jeffmcutter/miq_shortcuts.git
-ln -s miq_shortcuts/miqssh
+git clone https://github.com/jeffmcutter/cf_shortcuts.git
+ln -s cf_shortcuts/miqssh
 mkdir bin
-ln -s miq_shortcuts/check_ui bin/
+ln -s cf_shortcuts/check_ui bin/
 echo 'export PATH=$PATH:$HOME/miqssh' >> .bash_profile
 . .bash_profile
 miqhosts-gen | tee miqssh/miqhosts

@@ -122,7 +122,7 @@ then
   ssh -o StrictHostKeyChecking=no -t root@$CFME appliance_console_cli --region=1 --internal --password=smartvm --key --dbdisk=/dev/vdb
   sleep 5
   ssh root@$CFME systemctl start evmserverd
-  ssh root@$CFME -t git clone https://github.com/jeffmcutter/cf_shortcuts.git \&\& mkdir bin \&\& ln -s /root/cf_shortcuts/check_ui bin/check_ui \&\& ln -s cf_shortcuts/cfssh \&\& echo "export PATH=\\\$PATH:\\\$HOME/cfssh" \>\> .bash_profile
+  ssh root@$CFME -t git clone https://github.com/jeffmcutter/cf_shortcuts.git \&\& mkdir bin \&\& ln -s /root/cf_shortcuts/check_ui bin/check_ui \&\& ln -s cf_shortcuts/miqssh \&\& echo "export PATH=\\\$PATH:\\\$HOME/miqssh" \>\> .bash_profile
 else
   ssh -o StrictHostKeyChecking=no -t root@$CFME appliance_console_cli --hostname=$VMDB  --password=smartvm --fetch-key=$VMDB --sshpassword=smartvm \; systemctl start evmserverd
 fi

@@ -28,8 +28,8 @@ done
 shift $((OPTIND-1))
 
 case $NAME in
-  cfstatus) tool="cfssh" command="cd /var/www/miq/vmdb && rake evm:status" ;;
-  cfworkermemcheck) tool="cfgrep" outputfile="/tmp/.cfworkermemcheck.$$" Q="-Q" output="-o $outputfile" command="exceeded limit" ;;
+  miqstatus) tool="miqssh" command="cd /var/www/miq/vmdb && rake evm:status" ;;
+  miqworkermemcheck) tool="miqgrep" outputfile="/tmp/.miqworkermemcheck.$$" Q="-Q" output="-o $outputfile" command="exceeded limit" ;;
   *) echo "Unknown command."
      usage
      ;;
@@ -38,7 +38,7 @@ esac
 $tool $group $s $output $Q "$command"
 
 case $NAME in
-  cfworkermemcheck)
+  miqworkermemcheck)
     cat $outputfile  | perl -ne '$_ =~ /^\[(.*?)\] .*(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{6}).*Worker \[(\S+)\] .* (process memory usage) \[(\d+)\] (exceeded limit) \[(\d+)\], /; print "$1 $2 $3 $4 $5 $6 $7\n"'
     rm -f $outputfile
     ;;

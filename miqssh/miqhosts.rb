@@ -1,9 +1,6 @@
 #!/usr/bin/env ruby
 # 
-# Author: Jeffrey Cutter
-# License: GPL v3
-#
-# Parse cfhosts file for use with cfssh etc.
+# Parse miqhosts file for use with miqssh etc.
 #
 
 

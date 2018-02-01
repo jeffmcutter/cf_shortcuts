@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# Author: Jeffrey Cutter
-# License: GPL v3
-#
 # Note: This program can enable you to do things faster, including mistakes, use at your own risk.
 #
 
@@ -10,29 +7,37 @@ TAIL_NUMBER=3
 ALL_TAIL_NUMBER=999999999999999
 NAME=$(basename $0)
 DIR=$(dirname $0)
-cfhosts_cmd="$DIR/cfhosts.rb"
-cfhosts_file="$DIR/cfhosts"
+miqhosts_cmd="$DIR/miqhosts.rb"
+miqhosts_file="$DIR/miqhosts"
 USER="root"
 REQUEST=false
 
-if [ $NAME == "cfgrep-collate" ]
+if [ ! -f $miqhosts_file ]
 then
-  NAME=cfgrep
+  echo
+  echo "Some initial setup is required to use this.  See $DIR/INSTALL.txt."
+  echo
+  exit 1
 fi
 
-if [ $NAME == "cfgrep-request" ]
+if [ $NAME == "miqgrep-collate" ]
 then
-  NAME=cfgrep
+  NAME=miqgrep
+fi
+
+if [ $NAME == "miqgrep-request" ]
+then
+  NAME=miqgrep
   REQUEST=true
 fi
 
-if [ $NAME == "cftail-request" ]
+if [ $NAME == "miqtail-request" ]
 then
-  NAME=cftail
+  NAME=miqtail
   REQUEST=true
 fi
 
-groups=$($cfhosts_cmd $cfhosts_file list_groups)
+groups=$($miqhosts_cmd $miqhosts_file list_groups)
 
 function usage_common {
   echo "DESCRIPTION: $2"
@@ -66,7 +71,7 @@ function usage_case {
 function usage_log_file {
   echo
   echo "  log_file is optional and defaults to automation.log"
-  echo "    For CloudForms logs, log_file can be in the format of evm or evm.log"
+  echo "    For ManageIQ logs, log_file can be in the format of evm or evm.log"
   echo "    For any other files, use /the/full/path/to/file"
 }
 
@@ -93,7 +98,7 @@ function usage_grep {
 }
 
 function usage_output {
-  if [ $NAME == 'cfgrep' ]
+  if [ $NAME == 'miqgrep' ]
   then
     echo
     echo "  -o outputfile can be used to save output to outputfile"
@@ -117,11 +122,11 @@ function usage_regex {
 function usage {
   echo
   case $NAME in
-    "cfssh") usage_common "command args" "ssh and run command with args" ;;
-    "cfscp") usage_common "local_file remote_dest_dir" "push files out using scp" " " "  Only one file is supported at a time" ;;
-    "cfcollect") usage_common "remote_file local_dest_dir" "pull files in using scp" " " "  Wildcards are accepted for remote_file but should only match one file" " " "  local_files are appended with remote hostname" ;;
-    "cfgrep") usage_regex "[-a] [-i] [-o outputfile] [-Q] (pattern | -r request_id) [log_file]" "grep log_file for pattern or request_id and associated task_ids and collate all results and display using less" "$(eval usage_grep)" ;;
-    "cftail") usage_regex "[-i] [-l] (pattern | -r request_id) [log_file]" "multitail and grep pattern or request_id and associated task_ids" "$(eval usage_tail)" ;;
+    "miqssh") usage_common "command args" "ssh and run command with args" ;;
+    "miqscp") usage_common "local_file remote_dest_dir" "push files out using scp" " " "  Only one file is supported at a time" ;;
+    "miqcollect") usage_common "remote_file local_dest_dir" "pull files in using scp" " " "  Wildcards are accepted for remote_file but should only match one file" " " "  local_files are appended with remote hostname" ;;
+    "miqgrep") usage_regex "[-a] [-i] [-o outputfile] [-Q] (pattern | -r request_id) [log_file]" "grep log_file for pattern or request_id and associated task_ids and collate all results and display using less" "$(eval usage_grep)" ;;
+    "miqtail") usage_regex "[-i] [-l] (pattern | -r request_id) [log_file]" "multitail and grep pattern or request_id and associated task_ids" "$(eval usage_tail)" ;;
   esac
   echo "AVAILABLE GROUPS (default is all):"
   echo
@@ -150,7 +155,7 @@ function clean_pssh_out {
   fi
 }
 
-if [ $NAME == 'cftail' ]
+if [ $NAME == 'miqtail' ]
 then
   GREP='grep -e'
 else
@@ -219,7 +224,7 @@ then
   fi
 fi
 
-if [ $NAME == 'cfgrep' ]
+if [ $NAME == 'miqgrep' ]
 then
   if [ -z "$TMPFILE" ]
   then
@@ -245,7 +250,7 @@ then
   fi
 fi
 
-if [[ $NAME != 'cfgrep' && "$SAVEOUT" == 'true' ]]
+if [[ $NAME != 'miqgrep' && "$SAVEOUT" == 'true' ]]
 then
   echo
   echo "$NAME does not support -o option."
@@ -259,7 +264,7 @@ else
   trap clean_pssh_out EXIT
 fi
 
-if [ $NAME == 'cfssh' ]
+if [ $NAME == 'miqssh' ]
 then
   if [ $# -lt 1 ]
   then
@@ -272,7 +277,7 @@ then
   echo
   echo "Not enough arguments!"
   usage
-elif [[ $NAME == 'cfgrep' || $NAME == "cftail" ]]
+elif [[ $NAME == 'miqgrep' || $NAME == "miqtail" ]]
 then
   if [[ $# -ne 1 && $# -ne 2 ]]
   then
@@ -294,17 +299,17 @@ then
   group=all
 fi
 
-if [ ! -r "$cfhosts_file" ]
+if [ ! -r "$miqhosts_file" ]
 then
   echo
-  echo "$cfhosts_file not available!"
+  echo "$miqhosts_file not available!"
   usage
 fi
 
-if [ ! -x "$cfhosts_cmd" ]
+if [ ! -x "$miqhosts_cmd" ]
 then
   echo
-  echo "$cfhosts_file not executable!"
+  echo "$miqhosts_file not executable!"
   usage
 fi
 
@@ -313,13 +318,13 @@ then
   if [ ! -d '/var/www/miq/vmdb' ]
   then
     echo
-    echo "ERROR: $NAME must be run from a CloudForms appliance!"
+    echo "ERROR: $NAME must be run from a ManageIQ appliance!"
     echo
     exit 1
   fi
 fi
 
-if [ $NAME == 'cftail' ]
+if [ $NAME == 'miqtail' ]
 then
   which multitail > /dev/null 2>&1
   if [ $? -ne 0 ]
@@ -331,7 +336,7 @@ then
   fi
 fi
 
-# Check that we have a ruby available for cfhosts_cmd to use
+# Check that we have a ruby available for miqhosts_cmd to use
 /usr/bin/env ruby --version > /dev/null 2>&1
 if [ $? -ne 0 ]
 then
@@ -363,16 +368,16 @@ done
 if [ "$group_good" != "true" ]
 then
   echo
-  echo "Group $group not found in $cfhosts_file"
+  echo "Group $group not found in $miqhosts_file"
   usage
 fi
 
-if [[ "$QUIET" != 'true' && "$TRANSPORT" != 'pssh' && "$TRANSPORT" != 'ansible' || ( $NAME == 'cfgrep' && $REQUEST == 'true' ) ]]
+if [[ "$QUIET" != 'true' && "$TRANSPORT" != 'pssh' && "$TRANSPORT" != 'ansible' || ( $NAME == 'miqgrep' && $REQUEST == 'true' ) ]]
 then
   echo
 fi
 
-SERVERS=$($cfhosts_cmd $cfhosts_file list_servers $group)
+SERVERS=$($miqhosts_cmd $miqhosts_file list_servers $group)
 
 if [ "$1" == "list" ]
 then
@@ -387,12 +392,12 @@ then
   exit
 fi
 
-if [[ $NAME == 'cfgrep' || $NAME == 'cftail' ]]
+if [[ $NAME == 'miqgrep' || $NAME == 'miqtail' ]]
 then
   PATTERN="$1"
   if [ "$PATTERN" == 'nogrep' ]
   then
-    if [ $NAME == 'cfgrep' ]
+    if [ $NAME == 'miqgrep' ]
     then
       GREP='cat'
     PATTERN=''
@@ -411,7 +416,7 @@ then
     PATTERN="request_$REQUEST_ID$(for i in $TASK_IDS; do echo -n "|task_$i|provision_$i"; done)"
     echo "*** looking for request_id: $REQUEST_ID and task_id/provision_id: $TASK_IDS ***"
     echo
-    if [[ $NAME == 'cftail' && REQUEST == 'true' ]]
+    if [[ $NAME == 'miqtail' && REQUEST == 'true' ]]
     then
       sleep 1
     fi
@@ -426,7 +431,7 @@ then
   then
     LOG="/var/www/miq/vmdb/log/$(echo $LOG | sed 's/\.log$//').log"
   fi
-  if [ $NAME == 'cfgrep' ]
+  if [ $NAME == 'miqgrep' ]
   then
     if [ "$GREP_ARCHIVED" == 'true' ]
     then
@@ -445,7 +450,7 @@ fi
 ARGS=$*
 ARGS=$(echo $ARGS | sed 's/*/\\*/g')
 
-if [ $NAME != 'cftail' ]
+if [ $NAME != 'miqtail' ]
 then
 
   if [ "$TRANSPORT" == 'ssh' ]
@@ -455,10 +460,10 @@ then
     do
       echo "*** $i ***"
       case $NAME in
-        "cfssh") ssh $USER@$i $ARGS ;;
-        "cfscp") scp $1 $USER@$i:$2 ;;
-        "cfcollect") scp $USER@$i:$1 $2/$(basename $1)-$i ;;
-        "cfgrep") ssh $USER@$i "$GREP \"$PATTERN\" $LOG" | perl -pe 's/^\/.*?://' | sed -e "s/^/[$i] /" >> $TMPFILE ;;
+        "miqssh") ssh $USER@$i $ARGS ;;
+        "miqscp") scp $1 $USER@$i:$2 ;;
+        "miqcollect") scp $USER@$i:$1 $2/$(basename $1)-$i ;;
+        "miqgrep") ssh $USER@$i "$GREP \"$PATTERN\" $LOG" | perl -pe 's/^\/.*?://' | sed -e "s/^/[$i] /" >> $TMPFILE ;;
       esac
       echo
     done
@@ -473,10 +478,10 @@ then
     done
 
     case $NAME in
-      "cfssh") pssh -t 0 -i $HOSTS $ARGS ;;
-      "cfscp") pscp.pssh -t 0 $HOSTS $1 $2 ;;
-      "cfcollect") pslurp -t 0 $HOSTS -L $2 $1 . ;;
-      "cfgrep") pssh -t 0 $HOSTS -o $PSSH_OUTDIR "$GREP \"$PATTERN\" $LOG | perl -pe 's/^\/.*?://' | sed -e \"s/^/[\$(hostname -s)] /\"" ;;
+      "miqssh") pssh -t 0 -i $HOSTS $ARGS ;;
+      "miqscp") pscp.pssh -t 0 $HOSTS $1 $2 ;;
+      "miqcollect") pslurp -t 0 $HOSTS -L $2 $1 . ;;
+      "miqgrep") pssh -t 0 $HOSTS -o $PSSH_OUTDIR "$GREP \"$PATTERN\" $LOG | perl -pe 's/^\/.*?://' | sed -e \"s/^/[\$(hostname -s)] /\"" ;;
     esac
 
   elif [ "$TRANSPORT" == 'ansible' ]
@@ -485,10 +490,10 @@ then
     HOSTS=$(echo $SERVERS | sed -e 's/ /,/g')
 
     case $NAME in
-      "cfssh") ansible all -i $HOSTS -f $PARALLELISM -m shell -a "$ARGS" ;;
-      "cfscp") ansible all -i $HOSTS -f $PARALLELISM -m copy -a "src=$1 dest=$2" ;;
-      "cfcollect") ansible all -i $HOSTS -f $PARALLELISM -m fetch -a "src=$1 dest=$2/$(basename $1)-{{ inventory_hostname }} flat=yes" ;;
-      "cfgrep") ansible all -i $HOSTS -f $PARALLELISM -m shell -a "$GREP \"$PATTERN\" $LOG | perl -pe 's/^\/.*?://' | sed -e \"s/^/[\$(hostname -s)] /\"" | tee $TMPFILE ;;
+      "miqssh") ansible all -i $HOSTS -f $PARALLELISM -m shell -a "$ARGS" ;;
+      "miqscp") ansible all -i $HOSTS -f $PARALLELISM -m copy -a "src=$1 dest=$2" ;;
+      "miqcollect") ansible all -i $HOSTS -f $PARALLELISM -m fetch -a "src=$1 dest=$2/$(basename $1)-{{ inventory_hostname }} flat=yes" ;;
+      "miqgrep") ansible all -i $HOSTS -f $PARALLELISM -m shell -a "$GREP \"$PATTERN\" $LOG | perl -pe 's/^\/.*?://' | sed -e \"s/^/[\$(hostname -s)] /\"" | tee $TMPFILE ;;
     esac
 
   else
@@ -496,7 +501,7 @@ then
     exit 1
   fi
 
-  if [ $NAME == 'cfgrep' ]
+  if [ $NAME == 'miqgrep' ]
   then
     if [ "$TRANSPORT" == 'ansible' ]
     then

@@ -119,7 +119,7 @@ ssh-keygen -R $CFME > /dev/null 2>&1
 ssh-copy-id -o StrictHostKeyChecking=no root@$CFME
 if [ -z "$VMDB" ]
 then
-  ssh -o StrictHostKeyChecking=no -t root@$CFME appliance_console_cli --region=1 --internal --password=smartvm --key --dbdisk=/dev/vdb
+  ssh -o StrictHostKeyChecking=no -t root@$CFME appliance_console_cli --region=$1 --internal --password=smartvm --key --dbdisk=/dev/vdb
   sleep 5
   ssh root@$CFME systemctl start evmserverd
   ssh root@$CFME -t git clone https://github.com/jeffmcutter/cf_shortcuts.git \&\& mkdir bin \&\& ln -s /root/cf_shortcuts/check_ui bin/check_ui \&\& ln -s cf_shortcuts/miqssh \&\& echo "export PATH=\\\$PATH:\\\$HOME/miqssh" \>\> .bash_profile

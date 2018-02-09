@@ -49,22 +49,6 @@ alias lprod='less +F $VMDB/log/production.log'
 alias lpolicy='less +F $VMDB/log/policy.log'
 alias lpglog='less +F /opt/rh/postgresql92/root/var/lib/pgsql/data/pg_log/postgresql.log'
 
-# miqssh aliases
-alias cfcollect=miqcollect
-alias cfgrep=miqgrep
-alias cfgrep-collate=miqgrep-collate
-alias cfgrep-request=miqgrep-request
-alias cfhosts-gen=miqhosts-gen
-alias cfhosts.rb=miqhosts.rb
-alias cfscp=miqscp
-alias cfssh=miqssh
-alias cfssh-copy-id=miqssh-copy-id
-alias cfssh_wrapper=miqssh_wrapper
-alias cfstatus=miqstatus
-alias cftail=miqtail
-alias cftail-request=miqtail-request
-alias cfworkermemcheck=miqworkermemcheck
-
 if [ "$DEV" == "true" ]
 then
 

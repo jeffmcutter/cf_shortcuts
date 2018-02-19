@@ -3,6 +3,6 @@
 
 cd /var/www/miq/vmdb
 
-script/rails runner /path/bulk_tag.rb -f /path/input.csv
+bin/rails runner /path/bulk_tag.rb -f /path/input.csv
 
 cd -

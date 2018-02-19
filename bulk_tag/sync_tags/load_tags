@@ -1,0 +1,7 @@
+#!/bin/bash
+
+cd /var/www/miq/vmdb
+
+bin/rails runner tmp/load_tags.rb host storage vm
+
+cd -

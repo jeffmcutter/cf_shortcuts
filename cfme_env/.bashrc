@@ -75,7 +75,7 @@ alias railsc="pushd $VMDB && bin/rails c && popd"
 # kill provision job.
 function kill_prov {
   vmdb
-  bin/rails r tools/kill_provision.rb $1
+  bin/rails r tools/kill_provision.rb $(echo $1 | sed 's/,//g')
   cd - > /dev/null 2>&1
 }
 

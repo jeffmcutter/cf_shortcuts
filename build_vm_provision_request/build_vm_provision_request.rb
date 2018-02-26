@@ -239,6 +239,7 @@ begin
   def process_builds(dialog_options_hash, dialog_tags_hash)
     builds = get_array_of_builds(dialog_options_hash)
     log(:info, "builds: #{builds.inspect}")
+    vm_prov_request_ids = []
     builds.each do |build|
       merged_options_hash, merged_tags_hash = merge_dialog_information(build, dialog_options_hash, dialog_tags_hash)
 
@@ -288,7 +289,10 @@ begin
       request = build_provision_request(build, merged_options_hash, merged_tags_hash)
       log(:info, "Build: #{build} - VM Provision request #{request.id} for " \
           "#{merged_options_hash[:vm_name]} successfully submitted", true)
+      vm_prov_request_ids << request.id
     end
+    log(:info, "Setting state var :vm_prov_request_ids to #{vm_prov_request_ids.inspect}")
+    $evm.set_state_var(:vm_prov_request_ids, vm_prov_request_ids)
   end
 
   def set_valid_provisioning_args

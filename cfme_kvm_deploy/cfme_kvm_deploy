@@ -13,7 +13,7 @@ function usage {
   echo "Usage: $NAME ## purpose [vmdb_host]"
   echo "  ## is a number for cfme name found in hosts file."
   echo "  purpose is a one word name to remember this appliance by."
-  echo "  vmdb_host is the VMDB host to connect to, if none is specified the VMDB will be local."
+  echo "  vmdb_host is the VMDB host to connect to or no_config to skip database configuration, if not specified the VMDB will be local."
   echo
   exit 1
 }
@@ -117,13 +117,16 @@ sudo /usr/bin/virt-install \
 (
 ssh-keygen -R $CFME > /dev/null 2>&1
 ssh-copy-id -o StrictHostKeyChecking=no root@$CFME
-if [ -z "$VMDB" ]
+if [[ -z "$VMDB" && "$VMDB" != 'no_config' ]]
 then
   ssh -o StrictHostKeyChecking=no -t root@$CFME appliance_console_cli --region=$1 --internal --password=smartvm --key --dbdisk=/dev/vdb
   sleep 5
   ssh root@$CFME systemctl start evmserverd
-  ssh root@$CFME -t git clone https://github.com/jeffmcutter/cf_shortcuts.git \&\& mkdir bin \&\& ln -s /root/cf_shortcuts/check_ui bin/check_ui \&\& ln -s cf_shortcuts/miqssh \&\& echo "export PATH=\\\$PATH:\\\$HOME/miqssh" \>\> .bash_profile
+elif [ "$VMDB" == "no_config" ]
+then
+  echo "Skipping database configuration."
 else
   ssh -o StrictHostKeyChecking=no -t root@$CFME appliance_console_cli --hostname=$VMDB  --password=smartvm --fetch-key=$VMDB --sshpassword=smartvm \; systemctl start evmserverd
 fi
+ssh root@$CFME -t git clone https://github.com/jeffmcutter/cf_shortcuts.git \&\& mkdir bin \&\& ln -s /root/cf_shortcuts/check_ui bin/check_ui \&\& ln -s cf_shortcuts/miqssh \&\& echo "export PATH=\\\$PATH:\\\$HOME/miqssh" \>\> .bash_profile
 )

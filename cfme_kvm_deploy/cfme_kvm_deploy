@@ -65,7 +65,7 @@ then
   exit 1
 fi
 
-sed -i "s/^IPADDR=.*/IPADDR=$IP/" $WORKDIR/ifcfg-eth0 > $WORKDIR/ifcfg-eth0-$CFME \
+sed -e "s/^IPADDR=.*/IPADDR=$IP/" $WORKDIR/ifcfg-eth0 > $WORKDIR/ifcfg-eth0-$CFME \
 && \
 sudo cp -iv $CFME_IMG_PATH /var/lib/libvirt/images/$DEST_NAME.qcow2 \
 && \

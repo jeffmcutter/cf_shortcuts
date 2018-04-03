@@ -65,7 +65,7 @@ then
   exit 1
 fi
 
-sed -i -e "s/^IPADDR=.*/IPADDR=$IP/" $WORKDIR/ifcfg-eth0 \
+sed -i "s/^IPADDR=.*/IPADDR=$IP/" $WORKDIR/ifcfg-eth0 > $WORKDIR/ifcfg-eth0-$CFME \
 && \
 sudo cp -iv $CFME_IMG_PATH /var/lib/libvirt/images/$DEST_NAME.qcow2 \
 && \
@@ -76,13 +76,15 @@ sudo virt-customize -a \
 --hostname $CFME \
 --touch /.autorelabel \
 --run-command '/bin/yum -y remove cloud-init' \
---upload $WORKDIR/ifcfg-eth0:/etc/sysconfig/network-scripts/ifcfg-eth0 \
+--upload $WORKDIR/ifcfg-eth0-$CFME:/etc/sysconfig/network-scripts/ifcfg-eth0 \
 --mkdir /root/.ssh \
 --upload $WORKDIR/authorized_keys:/root/.ssh/authorized_keys \
 --upload $WORKDIR/.bashrc:/root/.bashrc \
 --upload $WORKDIR/.inputrc:/root/.inputrc \
 --upload $WORKDIR/.irbrc:/root/.irbrc \
 --upload $WORKDIR/.vimrc:/root/.vimrc \
+&& \
+rm -f $WORKDIR/ifcfg-eth0-$CFME \
 && \
 sudo /usr/bin/virt-install \
 --disk path=/var/lib/libvirt/images/$DEST_NAME.qcow2 \

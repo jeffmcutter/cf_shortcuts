@@ -32,7 +32,7 @@ cd
 git clone https://github.com/jeffmcutter/cf_shortcuts.git
 ln -s cf_shortcuts/miqssh
 mkdir bin
-ln -s cf_shortcuts/check_ui bin/
+ln -s ~/cf_shortcuts/check_ui bin/
 echo 'export PATH=$PATH:$HOME/miqssh' >> .bash_profile
 . .bash_profile
 miqhosts-gen | tee miqssh/miqhosts

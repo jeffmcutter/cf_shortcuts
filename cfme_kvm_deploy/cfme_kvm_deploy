@@ -45,7 +45,8 @@ CFME="$HOSTNAME_PREFIX$1"
 CFME_IMG_PATH="$CFME_IMG_LOCATION/$CFME_IMG_FILE"
 PURPOSE=$2
 DEST_NAME="${CFME}_${PURPOSE}"
-IP=$(getent hosts $CFME | awk '{print $1}')
+#IP=$(getent hosts $CFME | awk '{print $1}')
+IP=$(getent ahosts $CFME | head -1 | awk '{print $1}')
 if [ -r "$WORKDIR/network" ]
 then
   NETWORK=$(cat $WORKDIR/network)

@@ -113,6 +113,7 @@ begin
     builds = []
     dialogs_options_hash.each do |build, options|
       next if build.zero?
+      next if options[:number_of_vms] == 0
       builds << build
     end
     builds.sort

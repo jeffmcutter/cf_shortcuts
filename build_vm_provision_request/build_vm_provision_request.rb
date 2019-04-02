@@ -240,6 +240,7 @@ begin
   def process_builds(dialog_options_hash, dialog_tags_hash)
     builds = get_array_of_builds(dialog_options_hash)
     log(:info, "builds: #{builds.inspect}")
+    raise 'No valid builds found' if builds.empty?
     vm_prov_request_ids = []
     builds.each do |build|
       merged_options_hash, merged_tags_hash = merge_dialog_information(build, dialog_options_hash, dialog_tags_hash)

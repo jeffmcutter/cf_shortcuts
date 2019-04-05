@@ -54,7 +54,7 @@ begin
       log(:info, "Service:<#{parent_service.name}> vms:<#{parent_service.vms.count}> tags:<#{parent_service.tags.inspect}>")
 
       # Ensure final VM name (post IPAM acquire) is set in Service_Offering_Part_#
-      parent_service.custom_set("Service_Offering_Part_#{ws_values[:build_part]}".to_sym , vm.name)
+      #parent_service.custom_set("Service_Offering_Part_#{ws_values[:build_part]}".to_sym , vm.name)
 
       # Save the server_vlan as a custom attribute for use during retirement.
       # This enables us to release IP's for VMs not provisioned by CloudForms assuming the custom attribute is added to the VM object.

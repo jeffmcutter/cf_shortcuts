@@ -97,7 +97,7 @@ sudo /usr/bin/virt-install \
 --vcpus $CPUCOUNT \
 --ram $MEMORY_MB \
 --os-type=linux \
---os-variant=rhel7 \
+--os-variant=rhel8-unknown \
 --noautoconsole \
 && \
 (
